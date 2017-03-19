@@ -3,11 +3,19 @@
 #include "Dialog/DialogAbout.h"
 
 #include <QtCore/QTimer>
+#include <QtCore/QMimeData>
+#include <QtGui/QtEvents>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QAction>
+#include <QtDebug>
+
+#include "Gugu/Engine.h"
+#include "Gugu/Manager/ManagerAudio.h"
+#include "Gugu/Manager/ManagerResources.h"
+#include "Gugu/Resources/ResourceInfo.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -16,12 +24,12 @@ MainWindow::MainWindow(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose);
 
     //Main UI
-    setWindowTitle("Gugu::Editor");
+    setWindowTitle("Gugu::AudioPlayer");
     setWindowIcon(QIcon("Icons/application2.png"));
     //setWindowIcon(QIcon("Icons/smiley_cool.png"));
 
-    resize(1024, 768);
-    setMinimumSize(QSize(800, 600));
+    resize(400, 300);
+    setMinimumSize(QSize(200, 100));
 
     m_pMenuBar = new QMenuBar(this);
     m_pMenuBar->setGeometry(QRect(0, 0, 1024, 20));
@@ -44,12 +52,81 @@ MainWindow::MainWindow(QWidget *parent)
     m_pCentralTabWidget->setTabShape(QTabWidget::Rounded);
     pCentralLayout->addWidget(m_pCentralTabWidget);
 
+    // Handle Files drop
+    //QObject::connect(this, SIGNAL(dropEvent()), this, SLOT(OnDropEvent()));
+    setAcceptDrops(true);
+
+    qDebug("Hello");
+
+    // Finalize
     RefreshMenu();
+
+    //Engine Update
+    m_pTimerUpdateEngine = new QTimer(this);
+    m_pTimerUpdateEngine->setSingleShot(false);
+    connect(m_pTimerUpdateEngine, SIGNAL(timeout()), this, SLOT(UpdateEngine()));
+    m_pTimerUpdateEngine->start(20);
 }
 
 MainWindow::~MainWindow()
 {
+    //Stop Engine Update
+    m_pTimerUpdateEngine->stop();
+
     qDebug("Release MainWindow");
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+    event->acceptProposedAction();
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent* event)
+{
+    event->acceptProposedAction();
+}
+
+void MainWindow::dragLeaveEvent(QDragLeaveEvent* event)
+{
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent* event)
+{
+    OnDropEvent(event);
+}
+
+void MainWindow::OnDropEvent(class QDropEvent* event)
+{
+    const QMimeData* mimeData = event->mimeData();
+
+    // check for our needed mime type, here a file or a list of files
+    if (mimeData->hasUrls())
+    {
+        QStringList pathList;
+        QList<QUrl> urlList = mimeData->urls();
+
+        // extract the local paths of the files
+        for (int i = 0; i < urlList.size() && i < 32; ++i)
+        {
+            pathList.append(urlList.at(i).toLocalFile());
+            qDebug() << pathList[i];
+
+            std::string resourceID = pathList[i].toStdString();
+            gugu::FileInfo fileInfo(resourceID);
+
+            gugu::GetResources()->AddResourceInfo(resourceID, fileInfo);
+
+            gugu::MusicParameters params;
+            params.m_strFile = resourceID;
+            params.m_fFadeIn = 0.0f;
+            params.m_fFadeOut = 0.0f;
+            if (gugu::GetAudio()->PlayMusic(params))
+                qDebug("Play success");
+            else
+                qDebug("Play failed");
+        }
+    }
 }
 
 void MainWindow::RefreshMenu()
@@ -64,8 +141,6 @@ void MainWindow::RefreshMenu()
     QAction* pActionSaveAll = new QAction(pMenuEditor);
     pActionSaveAll->setText("Save All");
     pMenuEditor->addAction(pActionSaveAll);
-
-    QObject::connect(pActionSaveAll, SIGNAL(triggered()), this, SLOT(OnSaveAll()));
 
     pMenuEditor->addSeparator();
 
@@ -91,5 +166,10 @@ void MainWindow::OnOpenAbout()
 {
     DialogAbout oDialog;
     oDialog.exec();
+}
+
+void MainWindow::UpdateEngine()
+{
+    gugu::GetEngine()->Step(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
 }
 

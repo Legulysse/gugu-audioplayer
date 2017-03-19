@@ -57,7 +57,7 @@ CONFIG(debug, debug|release) {
             -lws2_32 \
             -lwinmm
 
-	TARGET = AudioPlayerDebug
+    TARGET = GuguAudioPlayerDebug
 	win32:DESTDIR = $$PATH_SOLUTION_ROOT/Version
 } else {
 	# -- RELEASE
@@ -81,6 +81,6 @@ CONFIG(debug, debug|release) {
             -lws2_32 \
             -lwinmm
         
-	TARGET = AudioPlayer
+    TARGET = GuguAudioPlayer
 	win32:DESTDIR = $$PATH_SOLUTION_ROOT/Version
 }

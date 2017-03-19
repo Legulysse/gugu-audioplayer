@@ -22,12 +22,24 @@ public:
 
 private slots:
 
+    void OnDropEvent(class QDropEvent* event);
     void OnOpenAbout();
+
+    void UpdateEngine();
+
+private:
+
+    virtual void dragEnterEvent(QDragEnterEvent* event);
+    virtual void dragMoveEvent(QDragMoveEvent* event);
+    virtual void dragLeaveEvent(QDragLeaveEvent* event);
+    virtual void dropEvent(QDropEvent *event);
 
 private:
 
     QTabWidget* m_pCentralTabWidget;
     QMenuBar*   m_pMenuBar;
+
+    QTimer* m_pTimerUpdateEngine;
 };
 
 

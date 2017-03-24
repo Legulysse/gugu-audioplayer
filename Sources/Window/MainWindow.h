@@ -25,7 +25,9 @@ private slots:
     void OnDropEvent(class QDropEvent* event);
     void OnOpenAbout();
 
-    void UpdateEngine();
+    void OnUpdateEngine();
+
+    void OnVolumeSliderMoved(int);
 
 private:
 

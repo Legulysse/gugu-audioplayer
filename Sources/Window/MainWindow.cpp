@@ -10,6 +10,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QAction>
+#include <QtWidgets/QSlider>
 #include <QtDebug>
 
 #include "Gugu/Engine.h"
@@ -23,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
 
-    //Main UI
-    setWindowTitle("Gugu::AudioPlayer");
+    // Main UI
+    setWindowTitle("Gugu::AudioPlayer");    //TODO: Ability to get the engine config title, to apply here and in the About dialog
     setWindowIcon(QIcon("Icons/application2.png"));
     //setWindowIcon(QIcon("Icons/smiley_cool.png"));
 
@@ -39,18 +40,38 @@ MainWindow::MainWindow(QWidget *parent)
     pStatusBar->setObjectName(QString::fromUtf8("statusBar"));
     setStatusBar(pStatusBar);
 
-    //Central Widget
+    // Main Widget
     QWidget* pCentralWidget = new QWidget(this);
     setCentralWidget(pCentralWidget);
 
+    // Main Layout
     QVBoxLayout* pCentralLayout = new QVBoxLayout(pCentralWidget);
     pCentralLayout->setSpacing(6);
     pCentralLayout->setContentsMargins(1, 1, 1, 1);
     pCentralWidget->setLayout(pCentralLayout);
 
+    // Actual Central Widget (to fill the space)
     m_pCentralTabWidget = new QTabWidget(pCentralWidget);
     m_pCentralTabWidget->setTabShape(QTabWidget::Rounded);
     pCentralLayout->addWidget(m_pCentralTabWidget);
+
+    // Play Control Layout
+    QHBoxLayout* pPlayControlLayout = new QHBoxLayout(pCentralWidget);
+    pCentralLayout->addLayout(pPlayControlLayout);
+
+    // Volume Control
+    QSlider* pSliderVolume = new QSlider();
+    pSliderVolume->setToolTip("Volume");
+    pSliderVolume->setObjectName(QString::fromUtf8("horizontalSlider"));
+    pSliderVolume->setOrientation(Qt::Horizontal);
+    pSliderVolume->setRange(0, 200);
+    pSliderVolume->setSliderPosition(100);
+    pSliderVolume->setSingleStep(1);
+    pSliderVolume->setMinimumWidth(20);
+    pSliderVolume->setMaximumWidth(200);
+    pSliderVolume->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    pPlayControlLayout->addWidget(pSliderVolume);
+    connect(pSliderVolume, SIGNAL(valueChanged(int)), this, SLOT(OnVolumeSliderMoved(int)));
 
     // Handle Files drop
     //QObject::connect(this, SIGNAL(dropEvent()), this, SLOT(OnDropEvent()));
@@ -64,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Engine Update
     m_pTimerUpdateEngine = new QTimer(this);
     m_pTimerUpdateEngine->setSingleShot(false);
-    connect(m_pTimerUpdateEngine, SIGNAL(timeout()), this, SLOT(UpdateEngine()));
+    connect(m_pTimerUpdateEngine, SIGNAL(timeout()), this, SLOT(OnUpdateEngine()));
     m_pTimerUpdateEngine->start(20);
 }
 
@@ -168,8 +189,12 @@ void MainWindow::OnOpenAbout()
     oDialog.exec();
 }
 
-void MainWindow::UpdateEngine()
+void MainWindow::OnUpdateEngine()
 {
     gugu::GetEngine()->Step(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
 }
 
+void MainWindow::OnVolumeSliderMoved(int value)
+{
+    gugu::GetAudio()->SetVolumeMaster(((float)value) / 100.f);
+}

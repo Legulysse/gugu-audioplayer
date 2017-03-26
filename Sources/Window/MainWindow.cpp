@@ -11,6 +11,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QSlider>
+#include <QtWidgets/QToolButton>
 #include <QtDebug>
 
 #include "Gugu/Engine.h"
@@ -56,28 +57,60 @@ MainWindow::MainWindow(QWidget *parent)
     pCentralLayout->addWidget(m_pCentralTabWidget);
 
     // Play Control Layout
-    QHBoxLayout* pPlayControlLayout = new QHBoxLayout(pCentralWidget);
-    pCentralLayout->addLayout(pPlayControlLayout);
+    {
+        QHBoxLayout* pPlayControlLayout = new QHBoxLayout(pCentralWidget);
+        pCentralLayout->addLayout(pPlayControlLayout);
 
-    // Volume Control
-    QSlider* pSliderVolume = new QSlider();
-    pSliderVolume->setToolTip("Volume");
-    pSliderVolume->setObjectName(QString::fromUtf8("horizontalSlider"));
-    pSliderVolume->setOrientation(Qt::Horizontal);
-    pSliderVolume->setRange(0, 200);
-    pSliderVolume->setSliderPosition(100);
-    pSliderVolume->setSingleStep(1);
-    pSliderVolume->setMinimumWidth(20);
-    pSliderVolume->setMaximumWidth(200);
-    pSliderVolume->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    pPlayControlLayout->addWidget(pSliderVolume);
-    connect(pSliderVolume, SIGNAL(valueChanged(int)), this, SLOT(OnVolumeSliderMoved(int)));
+        // Play Control
+        {
+            QToolButton* pButton = new QToolButton();
+            pButton->setToolTip("Play");
+            pButton->setIcon(QIcon("Icons/control_play.png"));
+            pButton->setAutoRaise(true);
+            pPlayControlLayout->addWidget(pButton);
+            connect(pButton, SIGNAL(clicked()), this, SLOT(OnControlPlay()));
+        }
+
+        // Pause Control
+        {
+            QToolButton* pButton = new QToolButton();
+            pButton->setToolTip("Pause");
+            pButton->setIcon(QIcon("Icons/control_pause.png"));
+            pButton->setAutoRaise(true);
+            pPlayControlLayout->addWidget(pButton);
+            connect(pButton, SIGNAL(clicked()), this, SLOT(OnControlPause()));
+        }
+
+        // Stop Control
+        {
+            QToolButton* pButton = new QToolButton();
+            pButton->setToolTip("Stop");
+            pButton->setIcon(QIcon("Icons/control_stop.png"));
+            pButton->setAutoRaise(true);
+            pPlayControlLayout->addWidget(pButton);
+            connect(pButton, SIGNAL(clicked()), this, SLOT(OnControlStop()));
+        }
+
+        // Volume Control
+        {
+            QSlider* pSliderVolume = new QSlider();
+            pSliderVolume->setToolTip("Volume");
+            pSliderVolume->setObjectName(QString::fromUtf8("horizontalSlider"));
+            pSliderVolume->setOrientation(Qt::Horizontal);
+            pSliderVolume->setRange(0, 200);
+            pSliderVolume->setSliderPosition(100);
+            pSliderVolume->setSingleStep(1);
+            pSliderVolume->setMinimumWidth(20);
+            pSliderVolume->setMaximumWidth(200);
+            pSliderVolume->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+            pPlayControlLayout->addWidget(pSliderVolume);
+            connect(pSliderVolume, SIGNAL(valueChanged(int)), this, SLOT(OnVolumeSliderMoved(int)));
+        }
+    }
 
     // Handle Files drop
     //QObject::connect(this, SIGNAL(dropEvent()), this, SLOT(OnDropEvent()));
     setAcceptDrops(true);
-
-    qDebug("Hello");
 
     // Finalize
     RefreshMenu();
@@ -131,7 +164,8 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
         for (int i = 0; i < urlList.size() && i < 32; ++i)
         {
             pathList.append(urlList.at(i).toLocalFile());
-            qDebug() << pathList[i];
+
+            //qDebug() << pathList[i];
 
             std::string resourceID = pathList[i].toStdString();
             gugu::FileInfo fileInfo(resourceID);
@@ -142,10 +176,9 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             params.m_strFile = resourceID;
             params.m_fFadeIn = 0.0f;
             params.m_fFadeOut = 0.0f;
-            if (gugu::GetAudio()->PlayMusic(params))
-                qDebug("Play success");
-            else
-                qDebug("Play failed");
+            gugu::GetAudio()->PlayMusic(params);
+
+            lastResourceID = resourceID;
         }
     }
 }
@@ -192,6 +225,24 @@ void MainWindow::OnOpenAbout()
 void MainWindow::OnUpdateEngine()
 {
     gugu::GetEngine()->Step(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
+}
+
+void MainWindow::OnControlPlay()
+{
+    gugu::MusicParameters params;
+    params.m_strFile = lastResourceID;
+    params.m_fFadeIn = 0.0f;
+    params.m_fFadeOut = 0.0f;
+    gugu::GetAudio()->PlayMusic(params);
+}
+
+void MainWindow::OnControlPause()
+{
+}
+
+void MainWindow::OnControlStop()
+{
+    gugu::GetAudio()->StopMusic(0.f);
 }
 
 void MainWindow::OnVolumeSliderMoved(int value)

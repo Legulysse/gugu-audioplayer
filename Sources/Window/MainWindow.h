@@ -27,6 +27,9 @@ private slots:
 
     void OnUpdateEngine();
 
+    void OnControlPlay();
+    void OnControlPause();
+    void OnControlStop();
     void OnVolumeSliderMoved(int);
 
 private:
@@ -42,6 +45,8 @@ private:
     QMenuBar*   m_pMenuBar;
 
     QTimer* m_pTimerUpdateEngine;
+
+    std::string lastResourceID;
 };
 
 

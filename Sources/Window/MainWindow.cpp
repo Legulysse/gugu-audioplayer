@@ -106,6 +106,22 @@ MainWindow::MainWindow(QWidget *parent)
             pPlayControlLayout->addWidget(pSliderVolume);
             connect(pSliderVolume, SIGNAL(valueChanged(int)), this, SLOT(OnVolumeSliderMoved(int)));
         }
+
+        // Seek Control
+        {
+            m_pSliderSeek = new QSlider();
+            m_pSliderSeek->setToolTip("Seek");
+            m_pSliderSeek->setObjectName(QString::fromUtf8("horizontalSlider"));
+            m_pSliderSeek->setOrientation(Qt::Horizontal);
+            m_pSliderSeek->setRange(0, 1);
+            m_pSliderSeek->setSliderPosition(0);
+            m_pSliderSeek->setSingleStep(1);
+            m_pSliderSeek->setMinimumWidth(20);
+            //m_pSliderSeek->setMaximumWidth(200);
+            m_pSliderSeek->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+            pPlayControlLayout->addWidget(m_pSliderSeek);
+            connect(m_pSliderSeek, SIGNAL(valueChanged(int)), this, SLOT(OnSeekSliderMoved(int)));
+        }
     }
 
     // Handle Files drop
@@ -189,14 +205,8 @@ void MainWindow::RefreshMenu()
 
     //Menu Editor
     QMenu* pMenuEditor = new QMenu(m_pMenuBar);
-    pMenuEditor->setTitle("Editor");
+    pMenuEditor->setTitle("Player");
     m_pMenuBar->addMenu(pMenuEditor);
-
-    QAction* pActionSaveAll = new QAction(pMenuEditor);
-    pActionSaveAll->setText("Save All");
-    pMenuEditor->addAction(pActionSaveAll);
-
-    pMenuEditor->addSeparator();
 
     QAction* pActionClose = new QAction(pMenuEditor);
     pActionClose->setText("Close");
@@ -225,27 +235,60 @@ void MainWindow::OnOpenAbout()
 void MainWindow::OnUpdateEngine()
 {
     gugu::GetEngine()->Step(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
+
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    if (pMusic)
+    {
+        m_pSliderSeek->blockSignals(true);
+        m_pSliderSeek->setRange(0, pMusic->GetDuration().GetMilliseconds());
+        m_pSliderSeek->setSliderPosition(pMusic->GetPlayOffset().GetMilliseconds());
+        m_pSliderSeek->blockSignals(false);
+    }
 }
 
 void MainWindow::OnControlPlay()
 {
-    gugu::MusicParameters params;
+    /*gugu::MusicParameters params;
     params.m_strFile = lastResourceID;
     params.m_fFadeIn = 0.0f;
     params.m_fFadeOut = 0.0f;
-    gugu::GetAudio()->PlayMusic(params);
+    gugu::GetAudio()->PlayMusic(params);*/
+
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    if (pMusic)
+    {
+        pMusic->Play();
+    }
 }
 
 void MainWindow::OnControlPause()
 {
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    if (pMusic)
+    {
+        pMusic->Pause();
+    }
 }
 
 void MainWindow::OnControlStop()
 {
-    gugu::GetAudio()->StopMusic(0.f);
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    if (pMusic)
+    {
+        pMusic->Stop();
+    }
 }
 
 void MainWindow::OnVolumeSliderMoved(int value)
 {
     gugu::GetAudio()->SetVolumeMaster(((float)value) / 100.f);
+}
+
+void MainWindow::OnSeekSliderMoved(int value)
+{
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    if (pMusic)
+    {
+        pMusic->SetPlayOffset(gugu::DeltaTime(value));
+    }
 }

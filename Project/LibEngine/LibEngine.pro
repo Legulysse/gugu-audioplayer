@@ -13,15 +13,15 @@ VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/Sourc
 #Auto begin  (Do not edit or duplicate ! Will be used by a script)
 
 HEADERS +=  \
+            Gugu/3D/ActorComponentMesh.h \
             Gugu/3D/BillboardAnim.h \
             Gugu/3D/BillboardAnimated.h \
             Gugu/3D/BillboardAnimGroup.h \
+            Gugu/3D/Camera3D.h \
             Gugu/3D/Character.h \
+            Gugu/3D/Level3D.h \
             Gugu/3D/OgreCommon.h \
             Gugu/3D/OgreRenderer.h \
-            Gugu/Actor/Actor.h \
-            Gugu/Actor/ActorComponent.h \
-            Gugu/Actor/ActorComponentMesh.h \
             Gugu/Audio/MusicInstance.h \
             Gugu/Audio/MusicLayer.h \
             Gugu/Audio/SoundInstance.h \
@@ -96,25 +96,24 @@ HEADERS +=  \
             Gugu/Window/HandlerEvents.h \
             Gugu/Window/Window.h \
             Gugu/Window/WindowOgre.h \
-            Gugu/World/3D/Camera3D.h \
-            Gugu/World/3D/Level3D.h \
+            Gugu/World/Actor.h \
+            Gugu/World/ActorComponent.h \
             Gugu/World/Grid/BaseGrid.h \
             Gugu/World/Grid/GridCell.h \
             Gugu/World/Grid/HexGrid.h \
             Gugu/World/Grid/SquareGrid.h \
             Gugu/World/Level.h \
-            Gugu/World/LevelLayer.h \
             Gugu/World/World.h
 
 SOURCES +=  \
+            Gugu/3D/ActorComponentMesh.cpp \
             Gugu/3D/BillboardAnim.cpp \
             Gugu/3D/BillboardAnimated.cpp \
             Gugu/3D/BillboardAnimGroup.cpp \
+            Gugu/3D/Camera3D.cpp \
             Gugu/3D/Character.cpp \
+            Gugu/3D/Level3D.cpp \
             Gugu/3D/OgreRenderer.cpp \
-            Gugu/Actor/Actor.cpp \
-            Gugu/Actor/ActorComponent.cpp \
-            Gugu/Actor/ActorComponentMesh.cpp \
             Gugu/Audio/MusicInstance.cpp \
             Gugu/Audio/MusicLayer.cpp \
             Gugu/Audio/SoundInstance.cpp \
@@ -173,34 +172,33 @@ SOURCES +=  \
             Gugu/Window/HandlerEvents.cpp \
             Gugu/Window/Window.cpp \
             Gugu/Window/WindowOgre.cpp \
-            Gugu/World/3D/Camera3D.cpp \
-            Gugu/World/3D/Level3D.cpp \
+            Gugu/World/Actor.cpp \
+            Gugu/World/ActorComponent.cpp \
             Gugu/World/Grid/BaseGrid.cpp \
             Gugu/World/Grid/GridCell.cpp \
             Gugu/World/Grid/HexGrid.cpp \
             Gugu/World/Grid/SquareGrid.cpp \
             Gugu/World/Level.cpp \
-            Gugu/World/LevelLayer.cpp \
             Gugu/World/World.cpp
 
 OTHER_FILES +=  \
+            Gugu/3D/ActorComponentMesh.cpp \
+            Gugu/3D/ActorComponentMesh.h \
             Gugu/3D/BillboardAnim.cpp \
             Gugu/3D/BillboardAnim.h \
             Gugu/3D/BillboardAnimated.cpp \
             Gugu/3D/BillboardAnimated.h \
             Gugu/3D/BillboardAnimGroup.cpp \
             Gugu/3D/BillboardAnimGroup.h \
+            Gugu/3D/Camera3D.cpp \
+            Gugu/3D/Camera3D.h \
             Gugu/3D/Character.cpp \
             Gugu/3D/Character.h \
+            Gugu/3D/Level3D.cpp \
+            Gugu/3D/Level3D.h \
             Gugu/3D/OgreCommon.h \
             Gugu/3D/OgreRenderer.cpp \
             Gugu/3D/OgreRenderer.h \
-            Gugu/Actor/Actor.cpp \
-            Gugu/Actor/Actor.h \
-            Gugu/Actor/ActorComponent.cpp \
-            Gugu/Actor/ActorComponent.h \
-            Gugu/Actor/ActorComponentMesh.cpp \
-            Gugu/Actor/ActorComponentMesh.h \
             Gugu/Audio/MusicInstance.cpp \
             Gugu/Audio/MusicInstance.h \
             Gugu/Audio/MusicLayer.cpp \
@@ -333,10 +331,10 @@ OTHER_FILES +=  \
             Gugu/Window/Window.h \
             Gugu/Window/WindowOgre.cpp \
             Gugu/Window/WindowOgre.h \
-            Gugu/World/3D/Camera3D.cpp \
-            Gugu/World/3D/Camera3D.h \
-            Gugu/World/3D/Level3D.cpp \
-            Gugu/World/3D/Level3D.h \
+            Gugu/World/Actor.cpp \
+            Gugu/World/Actor.h \
+            Gugu/World/ActorComponent.cpp \
+            Gugu/World/ActorComponent.h \
             Gugu/World/Grid/BaseGrid.cpp \
             Gugu/World/Grid/BaseGrid.h \
             Gugu/World/Grid/GridCell.cpp \
@@ -347,8 +345,6 @@ OTHER_FILES +=  \
             Gugu/World/Grid/SquareGrid.h \
             Gugu/World/Level.cpp \
             Gugu/World/Level.h \
-            Gugu/World/LevelLayer.cpp \
-            Gugu/World/LevelLayer.h \
             Gugu/World/World.cpp \
             Gugu/World/World.h
 

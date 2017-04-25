@@ -1,9 +1,6 @@
-#ifndef DIALOGABOUT_H
-#define DIALOGABOUT_H
-
+#pragma once
 
 #include <QtWidgets/QDialog>
-
 
 class DialogAbout : public QDialog
 {
@@ -13,6 +10,3 @@ public:
 
     DialogAbout();
 };
-
-
-#endif

@@ -1,13 +1,6 @@
-#ifndef GUGU_MAINWINDOW_H
-#define GUGU_MAINWINDOW_H
-
+#pragma once
 
 #include <QtWidgets/QMainWindow>
-
-
-class QTabWidget;
-class QMenuBar;
-
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +24,7 @@ private slots:
     void OnControlPause();
     void OnControlStop();
     void OnVolumeSliderMoved(int);
+    void OnSeekSliderMoved(int);
 
 private:
 
@@ -41,13 +35,12 @@ private:
 
 private:
 
-    QTabWidget* m_pCentralTabWidget;
-    QMenuBar*   m_pMenuBar;
+    class QTabWidget* m_pCentralTabWidget;
+    class QMenuBar* m_pMenuBar;
+
+    class QSlider* m_pSliderSeek;
 
     QTimer* m_pTimerUpdateEngine;
 
     std::string lastResourceID;
 };
-
-
-#endif

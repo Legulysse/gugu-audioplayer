@@ -12,12 +12,16 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QToolButton>
+#include <QtWidgets/QListWidget>
 #include <QtDebug>
 
 #include "Gugu/Engine.h"
 #include "Gugu/Manager/ManagerAudio.h"
 #include "Gugu/Manager/ManagerResources.h"
 #include "Gugu/Resources/ResourceInfo.h"
+
+
+#define PLAYER_UI_VOLUMEUNIT 100
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -42,23 +46,46 @@ MainWindow::MainWindow(QWidget *parent)
     setStatusBar(pStatusBar);
 
     // Main Widget
-    QWidget* pCentralWidget = new QWidget(this);
+    QWidget* pCentralWidget = new QWidget();
     setCentralWidget(pCentralWidget);
 
     // Main Layout
-    QVBoxLayout* pCentralLayout = new QVBoxLayout(pCentralWidget);
+    QVBoxLayout* pCentralLayout = new QVBoxLayout();
     pCentralLayout->setSpacing(6);
     pCentralLayout->setContentsMargins(1, 1, 1, 1);
     pCentralWidget->setLayout(pCentralLayout);
 
     // Actual Central Widget (to fill the space)
-    m_pCentralTabWidget = new QTabWidget(pCentralWidget);
-    m_pCentralTabWidget->setTabShape(QTabWidget::Rounded);
-    pCentralLayout->addWidget(m_pCentralTabWidget);
+    //m_pCentralTabWidget = new QTabWidget();
+    //m_pCentralTabWidget->setTabShape(QTabWidget::Rounded);
+    //pCentralLayout->addWidget(m_pCentralTabWidget);
+
+    // Play List
+    {
+        m_pListPlay = new QListWidget();
+        pCentralLayout->addWidget(m_pListPlay);
+    }
+
+    // Seek Control
+    {
+        m_pSliderSeek = new QSlider();
+        m_pSliderSeek->setToolTip("Seek");
+        m_pSliderSeek->setObjectName(QString::fromUtf8("horizontalSlider"));
+        m_pSliderSeek->setOrientation(Qt::Horizontal);
+        m_pSliderSeek->setRange(0, 1);
+        m_pSliderSeek->setSliderPosition(0);
+        m_pSliderSeek->setSingleStep(1);
+        m_pSliderSeek->setMinimumWidth(20);
+        //m_pSliderSeek->setMaximumWidth(200);
+        m_pSliderSeek->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+        connect(m_pSliderSeek, SIGNAL(valueChanged(int)), this, SLOT(OnSeekSliderMoved(int)));
+
+        pCentralLayout->addWidget(m_pSliderSeek);
+    }
 
     // Play Control Layout
     {
-        QHBoxLayout* pPlayControlLayout = new QHBoxLayout(pCentralWidget);
+        QHBoxLayout* pPlayControlLayout = new QHBoxLayout();
         pCentralLayout->addLayout(pPlayControlLayout);
 
         // Play Control
@@ -97,30 +124,14 @@ MainWindow::MainWindow(QWidget *parent)
             pSliderVolume->setToolTip("Volume");
             pSliderVolume->setObjectName(QString::fromUtf8("horizontalSlider"));
             pSliderVolume->setOrientation(Qt::Horizontal);
-            pSliderVolume->setRange(0, 200);
-            pSliderVolume->setSliderPosition(100);
+            pSliderVolume->setRange(0, PLAYER_UI_VOLUMEUNIT * 2);
+            pSliderVolume->setSliderPosition(PLAYER_UI_VOLUMEUNIT);
             pSliderVolume->setSingleStep(1);
             pSliderVolume->setMinimumWidth(20);
-            pSliderVolume->setMaximumWidth(200);
+            pSliderVolume->setMaximumWidth(100);
             pSliderVolume->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
             pPlayControlLayout->addWidget(pSliderVolume);
             connect(pSliderVolume, SIGNAL(valueChanged(int)), this, SLOT(OnVolumeSliderMoved(int)));
-        }
-
-        // Seek Control
-        {
-            m_pSliderSeek = new QSlider();
-            m_pSliderSeek->setToolTip("Seek");
-            m_pSliderSeek->setObjectName(QString::fromUtf8("horizontalSlider"));
-            m_pSliderSeek->setOrientation(Qt::Horizontal);
-            m_pSliderSeek->setRange(0, 1);
-            m_pSliderSeek->setSliderPosition(0);
-            m_pSliderSeek->setSingleStep(1);
-            m_pSliderSeek->setMinimumWidth(20);
-            //m_pSliderSeek->setMaximumWidth(200);
-            m_pSliderSeek->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-            pPlayControlLayout->addWidget(m_pSliderSeek);
-            connect(m_pSliderSeek, SIGNAL(valueChanged(int)), this, SLOT(OnSeekSliderMoved(int)));
         }
     }
 
@@ -195,6 +206,10 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             gugu::GetAudio()->PlayMusic(params);
 
             lastResourceID = resourceID;
+
+            // Update UI
+            m_pListPlay->clear();
+            m_pListPlay->addItem(QString::fromStdString(lastResourceID));
         }
     }
 }
@@ -248,12 +263,6 @@ void MainWindow::OnUpdateEngine()
 
 void MainWindow::OnControlPlay()
 {
-    /*gugu::MusicParameters params;
-    params.m_strFile = lastResourceID;
-    params.m_fFadeIn = 0.0f;
-    params.m_fFadeOut = 0.0f;
-    gugu::GetAudio()->PlayMusic(params);*/
-
     gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
     if (pMusic)
     {
@@ -281,7 +290,7 @@ void MainWindow::OnControlStop()
 
 void MainWindow::OnVolumeSliderMoved(int value)
 {
-    gugu::GetAudio()->SetVolumeMaster(((float)value) / 100.f);
+    gugu::GetAudio()->SetVolumeMaster(((float)value) / (float)PLAYER_UI_VOLUMEUNIT);
 }
 
 void MainWindow::OnSeekSliderMoved(int value)

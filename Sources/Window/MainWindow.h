@@ -38,6 +38,7 @@ private:
     class QTabWidget* m_pCentralTabWidget;
     class QMenuBar* m_pMenuBar;
 
+    class QListWidget* m_pListPlay;
     class QSlider* m_pSliderSeek;
 
     QTimer* m_pTimerUpdateEngine;

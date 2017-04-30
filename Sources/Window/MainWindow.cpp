@@ -180,21 +180,22 @@ void MainWindow::dropEvent(QDropEvent* event)
 void MainWindow::OnDropEvent(class QDropEvent* event)
 {
     const QMimeData* mimeData = event->mimeData();
-
-    // check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
-        QStringList pathList;
         QList<QUrl> urlList = mimeData->urls();
 
-        // extract the local paths of the files
+        // Update UI
+        m_pListPlay->clear();
+
+        std::vector<gugu::MusicParameters> vecPlaylist;
         for (int i = 0; i < urlList.size() && i < 32; ++i)
         {
-            pathList.append(urlList.at(i).toLocalFile());
+            QString strPath = urlList.at(i).toLocalFile();
 
-            //qDebug() << pathList[i];
-
-            std::string resourceID = pathList[i].toStdString();
+            // Originally used pathList[i].toStdString(), but since it uses toUtf8, it breaks some of my paths
+            // toLatin1() gives similar result to toLocal8Bit()
+            //TODO: investigate the need to update this >> https://bugreports.qt.io/browse/QTBUG-39086
+            std::string resourceID = strPath.toLocal8Bit().toStdString();
             gugu::FileInfo fileInfo(resourceID);
 
             gugu::GetResources()->AddResourceInfo(resourceID, fileInfo);
@@ -203,14 +204,13 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             params.m_strFile = resourceID;
             params.m_fFadeIn = 0.0f;
             params.m_fFadeOut = 0.0f;
-            gugu::GetAudio()->PlayMusic(params);
-
-            lastResourceID = resourceID;
+            vecPlaylist.push_back(params);
 
             // Update UI
-            m_pListPlay->clear();
-            m_pListPlay->addItem(QString::fromStdString(lastResourceID));
+            m_pListPlay->addItem(QString::fromStdString(resourceID));
         }
+
+        gugu::GetAudio()->PlayMusicList(vecPlaylist);
     }
 }
 

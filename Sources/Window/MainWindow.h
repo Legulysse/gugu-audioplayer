@@ -42,6 +42,4 @@ private:
     class QSlider* m_pSliderSeek;
 
     QTimer* m_pTimerUpdateEngine;
-
-    std::string lastResourceID;
 };

@@ -13,12 +13,14 @@
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QListWidget>
+#include <QtWidgets/QLabel>
 #include <QtDebug>
 
 #include "Gugu/Engine.h"
 #include "Gugu/Manager/ManagerAudio.h"
 #include "Gugu/Manager/ManagerResources.h"
 #include "Gugu/Resources/ResourceInfo.h"
+#include "Gugu/Resources/Music.h"
 
 
 #define PLAYER_UI_VOLUMEUNIT 100
@@ -64,6 +66,15 @@ MainWindow::MainWindow(QWidget *parent)
     {
         m_pListPlay = new QListWidget();
         pCentralLayout->addWidget(m_pListPlay);
+    }
+
+    // Current Track
+    {
+        m_pCurrentTrackInfos = new QLabel();
+        m_pCurrentTrackInfos->setText("Idle");
+        m_pCurrentTrackInfos->setIndent(5);
+
+        pCentralLayout->addWidget(m_pCurrentTrackInfos);
     }
 
     // Seek Control
@@ -207,7 +218,7 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             vecPlaylist.push_back(params);
 
             // Update UI
-            m_pListPlay->addItem(QString::fromStdString(resourceID));
+            m_pListPlay->addItem(QString::fromLocal8Bit(resourceID.c_str()));
         }
 
         gugu::GetAudio()->PlayMusicList(vecPlaylist);
@@ -251,13 +262,19 @@ void MainWindow::OnUpdateEngine()
 {
     gugu::GetEngine()->Step(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
 
-    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
-    if (pMusic)
+    gugu::MusicInstance* pMusicInstance = gugu::GetAudio()->GetCurrentMusicInstance();
+    if (pMusicInstance)
     {
+        m_pCurrentTrackInfos->setText(QString::fromLocal8Bit(pMusicInstance->GetMusic()->GetFileInfoRef().GetName().c_str()));
+
         m_pSliderSeek->blockSignals(true);
-        m_pSliderSeek->setRange(0, pMusic->GetDuration().GetMilliseconds());
-        m_pSliderSeek->setSliderPosition(pMusic->GetPlayOffset().GetMilliseconds());
+        m_pSliderSeek->setRange(0, pMusicInstance->GetDuration().GetMilliseconds());
+        m_pSliderSeek->setSliderPosition(pMusicInstance->GetPlayOffset().GetMilliseconds());
         m_pSliderSeek->blockSignals(false);
+    }
+    else
+    {
+        m_pCurrentTrackInfos->setText("Idle");
     }
 }
 

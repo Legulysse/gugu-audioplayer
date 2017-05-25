@@ -39,7 +39,8 @@ private:
     class QMenuBar* m_pMenuBar;
 
     class QListWidget* m_pListPlay;
+    class QLabel* m_pCurrentTrackInfos;
     class QSlider* m_pSliderSeek;
 
-    QTimer* m_pTimerUpdateEngine;
+    class QTimer* m_pTimerUpdateEngine;
 };

@@ -15,9 +15,8 @@ VPATH +=	$$PATH_SOLUTION_ROOT/Sources
 # ***    Files  ***#
 
 SOURCES +=  main.cpp
-
 OTHER_FILES +=  main.cpp
-
+RC_FILE = $$PATH_SOLUTION_ROOT/Project/app.rc
 
 # ***    Config  ***#
 
@@ -82,7 +81,7 @@ CONFIG(debug, debug|release) {
             -lsndfile \
             -lws2_32 \
             -lwinmm
-        
+
     TARGET = GuguAudioPlayer
 	win32:DESTDIR = $$PATH_SOLUTION_ROOT/Version
 }

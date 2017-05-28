@@ -33,8 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Main UI
     setWindowTitle("Gugu::AudioPlayer");    //TODO: Ability to get the engine config title, to apply here and in the About dialog
-    setWindowIcon(QIcon("Icons/application2.png"));
-    //setWindowIcon(QIcon("Icons/smiley_cool.png"));
+    setWindowIcon(QIcon("Icons/music_beam.png"));
 
     resize(400, 300);
     setMinimumSize(QSize(200, 100));

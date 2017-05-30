@@ -40,6 +40,7 @@ private:
 
     class QListWidget* m_pListPlay;
     class QLabel* m_pCurrentTrackInfos;
+    class QLabel* m_pCurrentTrackTime;
     class QSlider* m_pSliderSeek;
 
     class QTimer* m_pTimerUpdateEngine;

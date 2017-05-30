@@ -2,6 +2,7 @@
 
 #include "Dialog/DialogAbout.h"
 
+#include <QtCore/QTime>
 #include <QtCore/QTimer>
 #include <QtCore/QMimeData>
 #include <QtGui/QtEvents>
@@ -21,6 +22,7 @@
 #include "Gugu/Manager/ManagerResources.h"
 #include "Gugu/Resources/ResourceInfo.h"
 #include "Gugu/Resources/Music.h"
+#include "Gugu/Utility/System.h"
 
 
 #define PLAYER_UI_VOLUMEUNIT 100
@@ -64,16 +66,27 @@ MainWindow::MainWindow(QWidget *parent)
     // Play List
     {
         m_pListPlay = new QListWidget();
+
         pCentralLayout->addWidget(m_pListPlay);
     }
 
     // Current Track
     {
+        QHBoxLayout* pCurrentTrackLayout = new QHBoxLayout();
+        pCentralLayout->addLayout(pCurrentTrackLayout);
+
         m_pCurrentTrackInfos = new QLabel();
         m_pCurrentTrackInfos->setText("Idle");
         m_pCurrentTrackInfos->setIndent(5);
 
-        pCentralLayout->addWidget(m_pCurrentTrackInfos);
+        pCurrentTrackLayout->addWidget(m_pCurrentTrackInfos);
+
+        m_pCurrentTrackTime = new QLabel();
+        m_pCurrentTrackTime->setText("./.");
+        m_pCurrentTrackTime->setIndent(5);
+        m_pCurrentTrackTime->setAlignment(Qt::AlignRight);
+
+        pCurrentTrackLayout->addWidget(m_pCurrentTrackTime);
     }
 
     // Seek Control
@@ -88,9 +101,9 @@ MainWindow::MainWindow(QWidget *parent)
         m_pSliderSeek->setMinimumWidth(20);
         //m_pSliderSeek->setMaximumWidth(200);
         m_pSliderSeek->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
-        connect(m_pSliderSeek, SIGNAL(valueChanged(int)), this, SLOT(OnSeekSliderMoved(int)));
 
         pCentralLayout->addWidget(m_pSliderSeek);
+        connect(m_pSliderSeek, SIGNAL(valueChanged(int)), this, SLOT(OnSeekSliderMoved(int)));
     }
 
     // Play Control Layout
@@ -98,12 +111,18 @@ MainWindow::MainWindow(QWidget *parent)
         QHBoxLayout* pPlayControlLayout = new QHBoxLayout();
         pCentralLayout->addLayout(pPlayControlLayout);
 
+        {
+            QSpacerItem* pSpacer = new QSpacerItem(0,0,QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+            pPlayControlLayout->addSpacerItem(pSpacer);
+        }
+
         // Play Control
         {
             QToolButton* pButton = new QToolButton();
             pButton->setToolTip("Play");
             pButton->setIcon(QIcon("Icons/control_play.png"));
             pButton->setAutoRaise(true);
+
             pPlayControlLayout->addWidget(pButton);
             connect(pButton, SIGNAL(clicked()), this, SLOT(OnControlPlay()));
         }
@@ -114,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
             pButton->setToolTip("Pause");
             pButton->setIcon(QIcon("Icons/control_pause.png"));
             pButton->setAutoRaise(true);
+
             pPlayControlLayout->addWidget(pButton);
             connect(pButton, SIGNAL(clicked()), this, SLOT(OnControlPause()));
         }
@@ -124,6 +144,7 @@ MainWindow::MainWindow(QWidget *parent)
             pButton->setToolTip("Stop");
             pButton->setIcon(QIcon("Icons/control_stop.png"));
             pButton->setAutoRaise(true);
+
             pPlayControlLayout->addWidget(pButton);
             connect(pButton, SIGNAL(clicked()), this, SLOT(OnControlStop()));
         }
@@ -140,8 +161,14 @@ MainWindow::MainWindow(QWidget *parent)
             pSliderVolume->setMinimumWidth(20);
             pSliderVolume->setMaximumWidth(100);
             pSliderVolume->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
             pPlayControlLayout->addWidget(pSliderVolume);
             connect(pSliderVolume, SIGNAL(valueChanged(int)), this, SLOT(OnVolumeSliderMoved(int)));
+        }
+
+        {
+            QSpacerItem* pSpacer = new QSpacerItem(0,0,QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
+            pPlayControlLayout->addSpacerItem(pSpacer);
         }
     }
 
@@ -264,7 +291,16 @@ void MainWindow::OnUpdateEngine()
     gugu::MusicInstance* pMusicInstance = gugu::GetAudio()->GetCurrentMusicInstance();
     if (pMusicInstance)
     {
+        QTime timeCurrent(0, 0, 0, 0);
+        timeCurrent = timeCurrent.addMSecs(pMusicInstance->GetPlayOffset().ms());
+
+        QTime timeTotal(0, 0, 0, 0);
+        timeTotal = timeTotal.addMSecs(pMusicInstance->GetDuration().ms());
+
+        QString strTime = timeCurrent.toString(Qt::ISODate) + QString(" / ") + timeTotal.toString(Qt::ISODate);
+
         m_pCurrentTrackInfos->setText(QString::fromLocal8Bit(pMusicInstance->GetMusic()->GetFileInfoRef().GetName().c_str()));
+        m_pCurrentTrackTime->setText(strTime);
 
         m_pSliderSeek->blockSignals(true);
         m_pSliderSeek->setRange(0, pMusicInstance->GetDuration().GetMilliseconds());
@@ -274,6 +310,7 @@ void MainWindow::OnUpdateEngine()
     else
     {
         m_pCurrentTrackInfos->setText("Idle");
+        m_pCurrentTrackTime->setText("./.");
     }
 }
 

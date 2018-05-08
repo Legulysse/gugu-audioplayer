@@ -9,12 +9,12 @@ int main(int argc, char *argv[])
     int iExecReturn = 0;
 
     //Init engine
-    gugu::EngineInit oConfig;
-    oConfig.NameApplication     = "";
-    oConfig.PathAssets          = "Assets";
-    oConfig.PathScreenshots     = "Screenshots";
-    oConfig.GameWindowType		= gugu::EGameWindow::None;
-    oConfig.UseAssetsFullPaths  = true;
+    gugu::EngineConfig oConfig;
+    oConfig.applicationName = "";
+    oConfig.pathAssets = "Assets";
+    oConfig.pathScreenshots = "Screenshots";
+    oConfig.gameWindow = gugu::EGameWindow::None;
+    oConfig.useAssetsFullPaths = true;
 
     gugu::GetEngine()->Init(oConfig);
 

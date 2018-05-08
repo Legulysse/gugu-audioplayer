@@ -3,12 +3,12 @@
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
 INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/Sources \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesEngine \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
 
 VPATH +=	$$PATH_SOLUTION_ROOT/Sources \
-            $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesEngine \
-            $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
+            $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
+            $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
 
 
 # ***    Files  ***#

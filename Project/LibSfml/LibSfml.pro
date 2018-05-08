@@ -2,16 +2,19 @@
 
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/src
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/headers
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/headers/AL
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/headers/jpeg
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/headers/libsndfile/windows
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/headers/libfreetype/windows
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/src
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/AL
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/FLAC
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/freetype2
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/jpeg
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/ogg
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/stb_image
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/vorbis
 
-VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
-VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/src
+VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
+VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/src
 
 
 #***  Sfml  ***#
@@ -19,12 +22,18 @@ VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/Sourc
 #Auto begin  (Do not edit or duplicate ! Will be used by a script)
 
 HEADERS +=  \
+            SFML/Audio/AlResource.hpp \
             SFML/Audio/Export.hpp \
+            SFML/Audio/InputSoundFile.hpp \
             SFML/Audio/Listener.hpp \
             SFML/Audio/Music.hpp \
+            SFML/Audio/OutputSoundFile.hpp \
             SFML/Audio/Sound.hpp \
             SFML/Audio/SoundBuffer.hpp \
             SFML/Audio/SoundBufferRecorder.hpp \
+            SFML/Audio/SoundFileFactory.hpp \
+            SFML/Audio/SoundFileReader.hpp \
+            SFML/Audio/SoundFileWriter.hpp \
             SFML/Audio/SoundRecorder.hpp \
             SFML/Audio/SoundSource.hpp \
             SFML/Audio/SoundStream.hpp \
@@ -37,6 +46,7 @@ HEADERS +=  \
             SFML/Graphics/Drawable.hpp \
             SFML/Graphics/Export.hpp \
             SFML/Graphics/Font.hpp \
+            SFML/Graphics/Glsl.hpp \
             SFML/Graphics/Glyph.hpp \
             SFML/Graphics/Image.hpp \
             SFML/Graphics/PrimitiveType.hpp \
@@ -74,9 +84,12 @@ HEADERS +=  \
             SFML/System/Clock.hpp \
             SFML/System/Err.hpp \
             SFML/System/Export.hpp \
+            SFML/System/FileInputStream.hpp \
             SFML/System/InputStream.hpp \
             SFML/System/Lock.hpp \
+            SFML/System/MemoryInputStream.hpp \
             SFML/System/Mutex.hpp \
+            SFML/System/NativeActivity.hpp \
             SFML/System/NonCopyable.hpp \
             SFML/System/Sleep.hpp \
             SFML/System/String.hpp \
@@ -105,15 +118,19 @@ HEADERS +=  \
             SFML/Window.hpp \
             SFML/Audio/ALCheck.hpp \
             SFML/Audio/AudioDevice.hpp \
-            SFML/Audio/SoundFile.hpp \
+            SFML/Audio/SoundFileReaderFlac.hpp \
+            SFML/Audio/SoundFileReaderOgg.hpp \
+            SFML/Audio/SoundFileReaderWav.hpp \
+            SFML/Audio/SoundFileWriterFlac.hpp \
+            SFML/Audio/SoundFileWriterOgg.hpp \
+            SFML/Audio/SoundFileWriterWav.hpp \
             SFML/Graphics/GLCheck.hpp \
             SFML/Graphics/GLExtensions.hpp \
+            SFML/Graphics/GLLoader.hpp \
             SFML/Graphics/ImageLoader.hpp \
             SFML/Graphics/RenderTextureImpl.hpp \
             SFML/Graphics/RenderTextureImplDefault.hpp \
             SFML/Graphics/RenderTextureImplFBO.hpp \
-            SFML/Graphics/stb_image/stb_image.h \
-            SFML/Graphics/stb_image/stb_image_write.h \
             SFML/Graphics/TextureSaver.hpp \
             SFML/Network/SocketImpl.hpp \
             SFML/Network/Win32/SocketImpl.hpp \
@@ -123,8 +140,6 @@ HEADERS +=  \
             SFML/System/Win32/ThreadImpl.hpp \
             SFML/System/Win32/ThreadLocalImpl.hpp \
             SFML/Window/GlContext.hpp \
-            SFML/Window/glext/glext.h \
-            SFML/Window/glext/wglext.h \
             SFML/Window/InputImpl.hpp \
             SFML/Window/JoystickImpl.hpp \
             SFML/Window/JoystickManager.hpp \
@@ -135,18 +150,28 @@ HEADERS +=  \
             SFML/Window/Win32/JoystickImpl.hpp \
             SFML/Window/Win32/SensorImpl.hpp \
             SFML/Window/Win32/WglContext.hpp \
+            SFML/Window/Win32/WglExtensions.hpp \
             SFML/Window/Win32/WindowImplWin32.hpp \
             SFML/Window/WindowImpl.hpp
 
 SOURCES +=  \
             SFML/Audio/ALCheck.cpp \
+            SFML/Audio/AlResource.cpp \
             SFML/Audio/AudioDevice.cpp \
+            SFML/Audio/InputSoundFile.cpp \
             SFML/Audio/Listener.cpp \
             SFML/Audio/Music.cpp \
+            SFML/Audio/OutputSoundFile.cpp \
             SFML/Audio/Sound.cpp \
             SFML/Audio/SoundBuffer.cpp \
             SFML/Audio/SoundBufferRecorder.cpp \
-            SFML/Audio/SoundFile.cpp \
+            SFML/Audio/SoundFileFactory.cpp \
+            SFML/Audio/SoundFileReaderFlac.cpp \
+            SFML/Audio/SoundFileReaderOgg.cpp \
+            SFML/Audio/SoundFileReaderWav.cpp \
+            SFML/Audio/SoundFileWriterFlac.cpp \
+            SFML/Audio/SoundFileWriterOgg.cpp \
+            SFML/Audio/SoundFileWriterWav.cpp \
             SFML/Audio/SoundRecorder.cpp \
             SFML/Audio/SoundSource.cpp \
             SFML/Audio/SoundStream.cpp \
@@ -157,6 +182,8 @@ SOURCES +=  \
             SFML/Graphics/Font.cpp \
             SFML/Graphics/GLCheck.cpp \
             SFML/Graphics/GLExtensions.cpp \
+            SFML/Graphics/GLLoader.cpp \
+            SFML/Graphics/Glsl.cpp \
             SFML/Graphics/Image.cpp \
             SFML/Graphics/ImageLoader.cpp \
             SFML/Graphics/RectangleShape.cpp \
@@ -192,7 +219,9 @@ SOURCES +=  \
             SFML/Network/Win32/SocketImpl.cpp \
             SFML/System/Clock.cpp \
             SFML/System/Err.cpp \
+            SFML/System/FileInputStream.cpp \
             SFML/System/Lock.cpp \
+            SFML/System/MemoryInputStream.cpp \
             SFML/System/Mutex.cpp \
             SFML/System/Sleep.cpp \
             SFML/System/String.cpp \
@@ -220,17 +249,24 @@ SOURCES +=  \
             SFML/Window/Win32/SensorImpl.cpp \
             SFML/Window/Win32/VideoModeImpl.cpp \
             SFML/Window/Win32/WglContext.cpp \
+            SFML/Window/Win32/WglExtensions.cpp \
             SFML/Window/Win32/WindowImplWin32.cpp \
             SFML/Window/Window.cpp \
             SFML/Window/WindowImpl.cpp
 
 OTHER_FILES +=  \
+            SFML/Audio/AlResource.hpp \
             SFML/Audio/Export.hpp \
+            SFML/Audio/InputSoundFile.hpp \
             SFML/Audio/Listener.hpp \
             SFML/Audio/Music.hpp \
+            SFML/Audio/OutputSoundFile.hpp \
             SFML/Audio/Sound.hpp \
             SFML/Audio/SoundBuffer.hpp \
             SFML/Audio/SoundBufferRecorder.hpp \
+            SFML/Audio/SoundFileFactory.hpp \
+            SFML/Audio/SoundFileReader.hpp \
+            SFML/Audio/SoundFileWriter.hpp \
             SFML/Audio/SoundRecorder.hpp \
             SFML/Audio/SoundSource.hpp \
             SFML/Audio/SoundStream.hpp \
@@ -243,6 +279,7 @@ OTHER_FILES +=  \
             SFML/Graphics/Drawable.hpp \
             SFML/Graphics/Export.hpp \
             SFML/Graphics/Font.hpp \
+            SFML/Graphics/Glsl.hpp \
             SFML/Graphics/Glyph.hpp \
             SFML/Graphics/Image.hpp \
             SFML/Graphics/PrimitiveType.hpp \
@@ -280,9 +317,12 @@ OTHER_FILES +=  \
             SFML/System/Clock.hpp \
             SFML/System/Err.hpp \
             SFML/System/Export.hpp \
+            SFML/System/FileInputStream.hpp \
             SFML/System/InputStream.hpp \
             SFML/System/Lock.hpp \
+            SFML/System/MemoryInputStream.hpp \
             SFML/System/Mutex.hpp \
+            SFML/System/NativeActivity.hpp \
             SFML/System/NonCopyable.hpp \
             SFML/System/Sleep.hpp \
             SFML/System/String.hpp \
@@ -311,15 +351,29 @@ OTHER_FILES +=  \
             SFML/Window.hpp \
             SFML/Audio/ALCheck.cpp \
             SFML/Audio/ALCheck.hpp \
+            SFML/Audio/AlResource.cpp \
             SFML/Audio/AudioDevice.cpp \
             SFML/Audio/AudioDevice.hpp \
+            SFML/Audio/InputSoundFile.cpp \
             SFML/Audio/Listener.cpp \
             SFML/Audio/Music.cpp \
+            SFML/Audio/OutputSoundFile.cpp \
             SFML/Audio/Sound.cpp \
             SFML/Audio/SoundBuffer.cpp \
             SFML/Audio/SoundBufferRecorder.cpp \
-            SFML/Audio/SoundFile.cpp \
-            SFML/Audio/SoundFile.hpp \
+            SFML/Audio/SoundFileFactory.cpp \
+            SFML/Audio/SoundFileReaderFlac.cpp \
+            SFML/Audio/SoundFileReaderFlac.hpp \
+            SFML/Audio/SoundFileReaderOgg.cpp \
+            SFML/Audio/SoundFileReaderOgg.hpp \
+            SFML/Audio/SoundFileReaderWav.cpp \
+            SFML/Audio/SoundFileReaderWav.hpp \
+            SFML/Audio/SoundFileWriterFlac.cpp \
+            SFML/Audio/SoundFileWriterFlac.hpp \
+            SFML/Audio/SoundFileWriterOgg.cpp \
+            SFML/Audio/SoundFileWriterOgg.hpp \
+            SFML/Audio/SoundFileWriterWav.cpp \
+            SFML/Audio/SoundFileWriterWav.hpp \
             SFML/Audio/SoundRecorder.cpp \
             SFML/Audio/SoundSource.cpp \
             SFML/Audio/SoundStream.cpp \
@@ -332,6 +386,9 @@ OTHER_FILES +=  \
             SFML/Graphics/GLCheck.hpp \
             SFML/Graphics/GLExtensions.cpp \
             SFML/Graphics/GLExtensions.hpp \
+            SFML/Graphics/GLLoader.cpp \
+            SFML/Graphics/GLLoader.hpp \
+            SFML/Graphics/Glsl.cpp \
             SFML/Graphics/Image.cpp \
             SFML/Graphics/ImageLoader.cpp \
             SFML/Graphics/ImageLoader.hpp \
@@ -349,8 +406,6 @@ OTHER_FILES +=  \
             SFML/Graphics/Shader.cpp \
             SFML/Graphics/Shape.cpp \
             SFML/Graphics/Sprite.cpp \
-            SFML/Graphics/stb_image/stb_image.h \
-            SFML/Graphics/stb_image/stb_image_write.h \
             SFML/Graphics/Text.cpp \
             SFML/Graphics/Texture.cpp \
             SFML/Graphics/TextureSaver.cpp \
@@ -376,7 +431,9 @@ OTHER_FILES +=  \
             SFML/Network/Win32/SocketImpl.hpp \
             SFML/System/Clock.cpp \
             SFML/System/Err.cpp \
+            SFML/System/FileInputStream.cpp \
             SFML/System/Lock.cpp \
+            SFML/System/MemoryInputStream.cpp \
             SFML/System/Mutex.cpp \
             SFML/System/Sleep.cpp \
             SFML/System/String.cpp \
@@ -396,8 +453,6 @@ OTHER_FILES +=  \
             SFML/Window/Context.cpp \
             SFML/Window/GlContext.cpp \
             SFML/Window/GlContext.hpp \
-            SFML/Window/glext/glext.h \
-            SFML/Window/glext/wglext.h \
             SFML/Window/GlResource.cpp \
             SFML/Window/InputImpl.hpp \
             SFML/Window/Joystick.cpp \
@@ -422,6 +477,8 @@ OTHER_FILES +=  \
             SFML/Window/Win32/VideoModeImpl.cpp \
             SFML/Window/Win32/WglContext.cpp \
             SFML/Window/Win32/WglContext.hpp \
+            SFML/Window/Win32/WglExtensions.cpp \
+            SFML/Window/Win32/WglExtensions.hpp \
             SFML/Window/Win32/WindowImplWin32.cpp \
             SFML/Window/Win32/WindowImplWin32.hpp \
             SFML/Window/Window.cpp \

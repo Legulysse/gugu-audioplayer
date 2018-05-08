@@ -2,10 +2,10 @@
 
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesEngine
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
 
-VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesEngine
+VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine
 
 
 #***  GuguEngine  ***#
@@ -13,15 +13,6 @@ VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/Sourc
 #Auto begin  (Do not edit or duplicate ! Will be used by a script)
 
 HEADERS +=  \
-            Gugu/3D/ActorComponentMesh.h \
-            Gugu/3D/BillboardAnim.h \
-            Gugu/3D/BillboardAnimated.h \
-            Gugu/3D/BillboardAnimGroup.h \
-            Gugu/3D/Camera3D.h \
-            Gugu/3D/Character.h \
-            Gugu/3D/Level3D.h \
-            Gugu/3D/OgreCommon.h \
-            Gugu/3D/OgreRenderer.h \
             Gugu/Audio/MusicInstance.h \
             Gugu/Audio/MusicLayer.h \
             Gugu/Audio/SoundInstance.h \
@@ -29,21 +20,19 @@ HEADERS +=  \
             Gugu/Element/2D/ElementSFDrawable.h \
             Gugu/Element/2D/ElementSprite.h \
             Gugu/Element/2D/ElementSpriteAnimated.h \
+            Gugu/Element/2D/ElementSpriteGroup.h \
             Gugu/Element/2D/ElementText.h \
             Gugu/Element/2D/ElementTile.h \
+            Gugu/Element/2D/ElementTileMap.h \
             Gugu/Element/Element.h \
-            Gugu/Element/ElementComposite.h \
-            Gugu/Element/Gui/ElementButton.h \
-            Gugu/Element/Gui/ElementList.h \
-            Gugu/Element/Gui/ElementListItem.h \
+            Gugu/Element/UI/ElementButton.h \
+            Gugu/Element/UI/ElementList.h \
+            Gugu/Element/UI/ElementListItem.h \
             Gugu/Element/UI/ElementUILayout.h \
             Gugu/Engine.h \
             Gugu/External/PugiXml/pugiconfig.hpp \
             Gugu/External/PugiXml/pugixml.hpp \
             Gugu/External/PugiXmlWrap.h \
-            Gugu/External/TinyXml/tinystr.h \
-            Gugu/External/TinyXml/tinyxml.h \
-            Gugu/External/TinyXmlWrap.h \
             Gugu/Manager/ManagerAudio.h \
             Gugu/Manager/ManagerConfig.h \
             Gugu/Manager/ManagerNetwork.h \
@@ -52,7 +41,7 @@ HEADERS +=  \
             Gugu/Misc/BaseAnimation2D.h \
             Gugu/Misc/EventListener.h \
             Gugu/Misc/Logger.h \
-            Gugu/Misc/Logger.tpp \
+            Gugu/Misc/Trace.h \
             Gugu/Misc/UDim.h \
             Gugu/Network/ClientInfo.h \
             Gugu/Network/EnumsNetwork.h \
@@ -63,13 +52,13 @@ HEADERS +=  \
             Gugu/Resources/Datasheet.h \
             Gugu/Resources/EnumsResources.h \
             Gugu/Resources/Font.h \
-            Gugu/Resources/Image.h \
             Gugu/Resources/ImageSet.h \
             Gugu/Resources/Music.h \
             Gugu/Resources/Resource.h \
             Gugu/Resources/ResourceInfo.h \
             Gugu/Resources/Sound.h \
             Gugu/Resources/SoundCue.h \
+            Gugu/Resources/Texture.h \
             Gugu/Utility/Action.h \
             Gugu/Utility/Delegate.h \
             Gugu/Utility/DeltaTime.h \
@@ -95,7 +84,6 @@ HEADERS +=  \
             Gugu/Window/Camera.h \
             Gugu/Window/HandlerEvents.h \
             Gugu/Window/Window.h \
-            Gugu/Window/WindowOgre.h \
             Gugu/World/Actor.h \
             Gugu/World/ActorComponent.h \
             Gugu/World/Grid/BaseGrid.h \
@@ -106,36 +94,24 @@ HEADERS +=  \
             Gugu/World/World.h
 
 SOURCES +=  \
-            Gugu/3D/ActorComponentMesh.cpp \
-            Gugu/3D/BillboardAnim.cpp \
-            Gugu/3D/BillboardAnimated.cpp \
-            Gugu/3D/BillboardAnimGroup.cpp \
-            Gugu/3D/Camera3D.cpp \
-            Gugu/3D/Character.cpp \
-            Gugu/3D/Level3D.cpp \
-            Gugu/3D/OgreRenderer.cpp \
             Gugu/Audio/MusicInstance.cpp \
             Gugu/Audio/MusicLayer.cpp \
             Gugu/Audio/SoundInstance.cpp \
             Gugu/Element/2D/ElementSFDrawable.cpp \
             Gugu/Element/2D/ElementSprite.cpp \
             Gugu/Element/2D/ElementSpriteAnimated.cpp \
+            Gugu/Element/2D/ElementSpriteGroup.cpp \
             Gugu/Element/2D/ElementText.cpp \
             Gugu/Element/2D/ElementTile.cpp \
+            Gugu/Element/2D/ElementTileMap.cpp \
             Gugu/Element/Element.cpp \
-            Gugu/Element/ElementComposite.cpp \
-            Gugu/Element/Gui/ElementButton.cpp \
-            Gugu/Element/Gui/ElementList.cpp \
-            Gugu/Element/Gui/ElementListItem.cpp \
+            Gugu/Element/UI/ElementButton.cpp \
+            Gugu/Element/UI/ElementList.cpp \
+            Gugu/Element/UI/ElementListItem.cpp \
             Gugu/Element/UI/ElementUILayout.cpp \
             Gugu/Engine.cpp \
             Gugu/External/PugiXml/pugixml.cpp \
             Gugu/External/PugiXmlWrap.cpp \
-            Gugu/External/TinyXml/tinystr.cpp \
-            Gugu/External/TinyXml/tinyxml.cpp \
-            Gugu/External/TinyXml/tinyxmlerror.cpp \
-            Gugu/External/TinyXml/tinyxmlparser.cpp \
-            Gugu/External/TinyXmlWrap.cpp \
             Gugu/Manager/ManagerAudio.cpp \
             Gugu/Manager/ManagerConfig.cpp \
             Gugu/Manager/ManagerNetwork.cpp \
@@ -144,6 +120,7 @@ SOURCES +=  \
             Gugu/Misc/BaseAnimation2D.cpp \
             Gugu/Misc/EventListener.cpp \
             Gugu/Misc/Logger.cpp \
+            Gugu/Misc/Trace.cpp \
             Gugu/Misc/UDim.cpp \
             Gugu/Network/ClientInfo.cpp \
             Gugu/Network/NetworkPacket.cpp \
@@ -152,13 +129,13 @@ SOURCES +=  \
             Gugu/Resources/AnimSet.cpp \
             Gugu/Resources/Datasheet.cpp \
             Gugu/Resources/Font.cpp \
-            Gugu/Resources/Image.cpp \
             Gugu/Resources/ImageSet.cpp \
             Gugu/Resources/Music.cpp \
             Gugu/Resources/Resource.cpp \
             Gugu/Resources/ResourceInfo.cpp \
             Gugu/Resources/Sound.cpp \
             Gugu/Resources/SoundCue.cpp \
+            Gugu/Resources/Texture.cpp \
             Gugu/Utility/DeltaTime.cpp \
             Gugu/Utility/FileInfo.cpp \
             Gugu/Utility/FixedFloat.cpp \
@@ -171,7 +148,6 @@ SOURCES +=  \
             Gugu/Window/Camera.cpp \
             Gugu/Window/HandlerEvents.cpp \
             Gugu/Window/Window.cpp \
-            Gugu/Window/WindowOgre.cpp \
             Gugu/World/Actor.cpp \
             Gugu/World/ActorComponent.cpp \
             Gugu/World/Grid/BaseGrid.cpp \
@@ -182,23 +158,6 @@ SOURCES +=  \
             Gugu/World/World.cpp
 
 OTHER_FILES +=  \
-            Gugu/3D/ActorComponentMesh.cpp \
-            Gugu/3D/ActorComponentMesh.h \
-            Gugu/3D/BillboardAnim.cpp \
-            Gugu/3D/BillboardAnim.h \
-            Gugu/3D/BillboardAnimated.cpp \
-            Gugu/3D/BillboardAnimated.h \
-            Gugu/3D/BillboardAnimGroup.cpp \
-            Gugu/3D/BillboardAnimGroup.h \
-            Gugu/3D/Camera3D.cpp \
-            Gugu/3D/Camera3D.h \
-            Gugu/3D/Character.cpp \
-            Gugu/3D/Character.h \
-            Gugu/3D/Level3D.cpp \
-            Gugu/3D/Level3D.h \
-            Gugu/3D/OgreCommon.h \
-            Gugu/3D/OgreRenderer.cpp \
-            Gugu/3D/OgreRenderer.h \
             Gugu/Audio/MusicInstance.cpp \
             Gugu/Audio/MusicInstance.h \
             Gugu/Audio/MusicLayer.cpp \
@@ -212,20 +171,22 @@ OTHER_FILES +=  \
             Gugu/Element/2D/ElementSprite.h \
             Gugu/Element/2D/ElementSpriteAnimated.cpp \
             Gugu/Element/2D/ElementSpriteAnimated.h \
+            Gugu/Element/2D/ElementSpriteGroup.cpp \
+            Gugu/Element/2D/ElementSpriteGroup.h \
             Gugu/Element/2D/ElementText.cpp \
             Gugu/Element/2D/ElementText.h \
             Gugu/Element/2D/ElementTile.cpp \
             Gugu/Element/2D/ElementTile.h \
+            Gugu/Element/2D/ElementTileMap.cpp \
+            Gugu/Element/2D/ElementTileMap.h \
             Gugu/Element/Element.cpp \
             Gugu/Element/Element.h \
-            Gugu/Element/ElementComposite.cpp \
-            Gugu/Element/ElementComposite.h \
-            Gugu/Element/Gui/ElementButton.cpp \
-            Gugu/Element/Gui/ElementButton.h \
-            Gugu/Element/Gui/ElementList.cpp \
-            Gugu/Element/Gui/ElementList.h \
-            Gugu/Element/Gui/ElementListItem.cpp \
-            Gugu/Element/Gui/ElementListItem.h \
+            Gugu/Element/UI/ElementButton.cpp \
+            Gugu/Element/UI/ElementButton.h \
+            Gugu/Element/UI/ElementList.cpp \
+            Gugu/Element/UI/ElementList.h \
+            Gugu/Element/UI/ElementListItem.cpp \
+            Gugu/Element/UI/ElementListItem.h \
             Gugu/Element/UI/ElementUILayout.cpp \
             Gugu/Element/UI/ElementUILayout.h \
             Gugu/Engine.cpp \
@@ -235,14 +196,6 @@ OTHER_FILES +=  \
             Gugu/External/PugiXml/pugixml.hpp \
             Gugu/External/PugiXmlWrap.cpp \
             Gugu/External/PugiXmlWrap.h \
-            Gugu/External/TinyXml/tinystr.cpp \
-            Gugu/External/TinyXml/tinystr.h \
-            Gugu/External/TinyXml/tinyxml.cpp \
-            Gugu/External/TinyXml/tinyxml.h \
-            Gugu/External/TinyXml/tinyxmlerror.cpp \
-            Gugu/External/TinyXml/tinyxmlparser.cpp \
-            Gugu/External/TinyXmlWrap.cpp \
-            Gugu/External/TinyXmlWrap.h \
             Gugu/Manager/ManagerAudio.cpp \
             Gugu/Manager/ManagerAudio.h \
             Gugu/Manager/ManagerConfig.cpp \
@@ -259,7 +212,8 @@ OTHER_FILES +=  \
             Gugu/Misc/EventListener.h \
             Gugu/Misc/Logger.cpp \
             Gugu/Misc/Logger.h \
-            Gugu/Misc/Logger.tpp \
+            Gugu/Misc/Trace.cpp \
+            Gugu/Misc/Trace.h \
             Gugu/Misc/UDim.cpp \
             Gugu/Misc/UDim.h \
             Gugu/Network/ClientInfo.cpp \
@@ -278,8 +232,6 @@ OTHER_FILES +=  \
             Gugu/Resources/EnumsResources.h \
             Gugu/Resources/Font.cpp \
             Gugu/Resources/Font.h \
-            Gugu/Resources/Image.cpp \
-            Gugu/Resources/Image.h \
             Gugu/Resources/ImageSet.cpp \
             Gugu/Resources/ImageSet.h \
             Gugu/Resources/Music.cpp \
@@ -292,6 +244,8 @@ OTHER_FILES +=  \
             Gugu/Resources/Sound.h \
             Gugu/Resources/SoundCue.cpp \
             Gugu/Resources/SoundCue.h \
+            Gugu/Resources/Texture.cpp \
+            Gugu/Resources/Texture.h \
             Gugu/Utility/Action.h \
             Gugu/Utility/Delegate.h \
             Gugu/Utility/DeltaTime.cpp \
@@ -329,8 +283,6 @@ OTHER_FILES +=  \
             Gugu/Window/HandlerEvents.h \
             Gugu/Window/Window.cpp \
             Gugu/Window/Window.h \
-            Gugu/Window/WindowOgre.cpp \
-            Gugu/Window/WindowOgre.h \
             Gugu/World/Actor.cpp \
             Gugu/World/Actor.h \
             Gugu/World/ActorComponent.cpp \

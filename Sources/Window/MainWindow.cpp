@@ -235,12 +235,12 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             std::string resourceID = strPath.toLocal8Bit().toStdString();
             gugu::FileInfo fileInfo(resourceID);
 
-            gugu::GetResources()->AddResourceInfo(resourceID, fileInfo);
+            gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
 
             gugu::MusicParameters params;
-            params.m_strFile = resourceID;
-            params.m_fFadeIn = 0.0f;
-            params.m_fFadeOut = 0.0f;
+            params.musicID = resourceID;
+            params.fadeIn = 0.0f;
+            params.fadeOut = 0.0f;
             vecPlaylist.push_back(params);
 
             // Update UI

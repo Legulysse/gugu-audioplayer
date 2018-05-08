@@ -93,6 +93,6 @@ aSfmlExcludes = [   'SFML/Main/SFMLActivity.',
                     '/Unix/',
                 ]
 
-ProcessMakefile('Project/LibSfml/LibSfml.pro', ['GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include/', 'GuguEngine/version_current/EngineProject/Dev/SourcesSFML/src/'], aSfmlExcludes)
-ProcessMakefile('Project/LibEngine/LibEngine.pro', ['GuguEngine/version_current/EngineProject/Dev/SourcesEngine/'], [])
+ProcessMakefile('Project/LibSfml/LibSfml.pro', ['GuguEngine/version_current/Dev/SourcesSFML/include/', 'GuguEngine/version_current/Dev/SourcesSFML/src/'], aSfmlExcludes)
+ProcessMakefile('Project/LibEngine/LibEngine.pro', ['GuguEngine/version_current/Dev/SourcesEngine/'], [])
 

@@ -3,12 +3,12 @@
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
 INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/Sources \
-				$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesEngine \
-				$$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
 
 DEPENDPATH +=   $$PATH_SOLUTION_ROOT/Sources \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesEngine \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/include
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
 
 VPATH +=	$$PATH_SOLUTION_ROOT/Sources
 
@@ -47,14 +47,17 @@ CONFIG(debug, debug|release) {
             -lGuguEngine-s-d \
             -lSFML-s-d
 
-    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/libs-mingw/x86
+    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/libs-mingw/x86
     LIBS += -ljpeg \
             -lfreetype \
-            -lglew \
             -lgdi32 \
             -lopengl32 \
             -lopenal32 \
-            -lsndfile \
+            -lvorbisenc \
+            -lvorbisfile \
+            -lvorbis \
+            -logg \
+            -lflac \
             -lws2_32 \
             -lwinmm
 
@@ -71,14 +74,17 @@ CONFIG(debug, debug|release) {
             -lGuguEngine-s \
             -lSFML-s
 
-    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/EngineProject/Dev/SourcesSFML/extlibs/libs-mingw/x86
+    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/libs-mingw/x86
     LIBS += -ljpeg \
             -lfreetype \
-            -lglew \
             -lgdi32 \
             -lopengl32 \
             -lopenal32 \
-            -lsndfile \
+            -lvorbisenc \
+            -lvorbisfile \
+            -lvorbis \
+            -logg \
+            -lflac \
             -lws2_32 \
             -lwinmm
 

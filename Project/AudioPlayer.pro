@@ -1,7 +1,8 @@
 # ***    Config  ***#
 
 TEMPLATE = subdirs
-SUBDIRS =   LibSfml \
+SUBDIRS =   LibPugiXml \
+            LibSfml \
             LibEngine \
             LibAudioPlayer
 

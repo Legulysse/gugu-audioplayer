@@ -89,10 +89,12 @@ aSfmlExcludes = [   'SFML/Main/SFMLActivity.',
                     '/Android/',
                     '/FreeBSD/',
                     '/iOS/',
+                    '/OpenBSD/',
                     '/OSX/',
                     '/Unix/',
                 ]
 
+ProcessMakefile('Project/LibPugiXml/LibPugiXml.pro', ['GuguEngine/version_current/Dev/SourcesPugiXml/'], [])
 ProcessMakefile('Project/LibSfml/LibSfml.pro', ['GuguEngine/version_current/Dev/SourcesSFML/include/', 'GuguEngine/version_current/Dev/SourcesSFML/src/'], aSfmlExcludes)
 ProcessMakefile('Project/LibEngine/LibEngine.pro', ['GuguEngine/version_current/Dev/SourcesEngine/'], [])
 

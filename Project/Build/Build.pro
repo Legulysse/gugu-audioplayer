@@ -4,11 +4,13 @@ PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
 INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/Sources \
                 $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include \
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
 
 DEPENDPATH +=   $$PATH_SOLUTION_ROOT/Sources \
                 $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include \
+                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
 
 VPATH +=	$$PATH_SOLUTION_ROOT/Sources
 
@@ -40,26 +42,27 @@ CONFIG(debug, debug|release) {
 	# -- DEBUG
     POST_TARGETDEPS +=  $$PATH_SOLUTION_ROOT/Libs/libAudioPlayer-s-d.a \
                         $$PATH_SOLUTION_ROOT/Libs/libGuguEngine-s-d.a \
-                        $$PATH_SOLUTION_ROOT/Libs/libSFML-s-d.a
+                        $$PATH_SOLUTION_ROOT/Libs/libSFML-s-d.a \
+                        $$PATH_SOLUTION_ROOT/Libs/libPugiXml-s-d.a
 
     QMAKE_LIBDIR += -L $$PATH_SOLUTION_ROOT/Libs
     LIBS += -lAudioPlayer-s-d \
             -lGuguEngine-s-d \
-            -lSFML-s-d
+            -lSFML-s-d \
+            -lPugiXml-s-d
 
     QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/libs-mingw/x86
-    LIBS += -ljpeg \
-            -lfreetype \
+    LIBS += -lfreetype \
             -lgdi32 \
             -lopengl32 \
+            -lwinmm \
             -lopenal32 \
             -lvorbisenc \
             -lvorbisfile \
             -lvorbis \
             -logg \
             -lflac \
-            -lws2_32 \
-            -lwinmm
+            -lws2_32
 
     TARGET = GuguAudioPlayerDebug
 	win32:DESTDIR = $$PATH_SOLUTION_ROOT/Version
@@ -67,26 +70,27 @@ CONFIG(debug, debug|release) {
 	# -- RELEASE
     POST_TARGETDEPS +=  $$PATH_SOLUTION_ROOT/Libs/libAudioPlayer-s.a \
                         $$PATH_SOLUTION_ROOT/Libs/libGuguEngine-s.a \
-                        $$PATH_SOLUTION_ROOT/Libs/libSFML-s.a
+                        $$PATH_SOLUTION_ROOT/Libs/libSFML-s.a \
+                        $$PATH_SOLUTION_ROOT/Libs/libPugiXml-s.a
 
     QMAKE_LIBDIR += -L $$PATH_SOLUTION_ROOT/Libs
     LIBS += -lAudioPlayer-s \
             -lGuguEngine-s \
-            -lSFML-s
+            -lSFML-s \
+            -lPugiXml-s
 
     QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/libs-mingw/x86
-    LIBS += -ljpeg \
-            -lfreetype \
+    LIBS += -lfreetype \
             -lgdi32 \
             -lopengl32 \
+            -lwinmm \
             -lopenal32 \
             -lvorbisenc \
             -lvorbisfile \
             -lvorbis \
             -logg \
             -lflac \
-            -lws2_32 \
-            -lwinmm
+            -lws2_32
 
     TARGET = GuguAudioPlayer
 	win32:DESTDIR = $$PATH_SOLUTION_ROOT/Version

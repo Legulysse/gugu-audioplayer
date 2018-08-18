@@ -4,6 +4,7 @@ PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
 INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine
 INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
 
 VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine
 
@@ -30,8 +31,6 @@ HEADERS +=  \
             Gugu/Element/UI/ElementListItem.h \
             Gugu/Element/UI/ElementUILayout.h \
             Gugu/Engine.h \
-            Gugu/External/PugiXml/pugiconfig.hpp \
-            Gugu/External/PugiXml/pugixml.hpp \
             Gugu/External/PugiXmlWrap.h \
             Gugu/Manager/ManagerAudio.h \
             Gugu/Manager/ManagerConfig.h \
@@ -68,18 +67,12 @@ HEADERS +=  \
             Gugu/Utility/Math.h \
             Gugu/Utility/Math.tpp \
             Gugu/Utility/Random.h \
-            Gugu/Utility/SharedPtr.h \
-            Gugu/Utility/SharedPtr.tpp \
-            Gugu/Utility/SharedPtrImpl.h \
-            Gugu/Utility/SharedPtrImpl.tpp \
             Gugu/Utility/Singleton.h \
             Gugu/Utility/State.h \
             Gugu/Utility/StateMachine.h \
             Gugu/Utility/System.h \
             Gugu/Utility/System.tpp \
             Gugu/Utility/Types.h \
-            Gugu/Utility/WeakPtr.h \
-            Gugu/Utility/WeakPtr.tpp \
             Gugu/Version.h \
             Gugu/Window/Camera.h \
             Gugu/Window/HandlerEvents.h \
@@ -110,7 +103,6 @@ SOURCES +=  \
             Gugu/Element/UI/ElementListItem.cpp \
             Gugu/Element/UI/ElementUILayout.cpp \
             Gugu/Engine.cpp \
-            Gugu/External/PugiXml/pugixml.cpp \
             Gugu/External/PugiXmlWrap.cpp \
             Gugu/Manager/ManagerAudio.cpp \
             Gugu/Manager/ManagerConfig.cpp \
@@ -191,9 +183,6 @@ OTHER_FILES +=  \
             Gugu/Element/UI/ElementUILayout.h \
             Gugu/Engine.cpp \
             Gugu/Engine.h \
-            Gugu/External/PugiXml/pugiconfig.hpp \
-            Gugu/External/PugiXml/pugixml.cpp \
-            Gugu/External/PugiXml/pugixml.hpp \
             Gugu/External/PugiXmlWrap.cpp \
             Gugu/External/PugiXmlWrap.h \
             Gugu/Manager/ManagerAudio.cpp \
@@ -261,10 +250,6 @@ OTHER_FILES +=  \
             Gugu/Utility/Math.tpp \
             Gugu/Utility/Random.cpp \
             Gugu/Utility/Random.h \
-            Gugu/Utility/SharedPtr.h \
-            Gugu/Utility/SharedPtr.tpp \
-            Gugu/Utility/SharedPtrImpl.h \
-            Gugu/Utility/SharedPtrImpl.tpp \
             Gugu/Utility/Singleton.h \
             Gugu/Utility/State.cpp \
             Gugu/Utility/State.h \
@@ -274,8 +259,6 @@ OTHER_FILES +=  \
             Gugu/Utility/System.h \
             Gugu/Utility/System.tpp \
             Gugu/Utility/Types.h \
-            Gugu/Utility/WeakPtr.h \
-            Gugu/Utility/WeakPtr.tpp \
             Gugu/Version.h \
             Gugu/Window/Camera.cpp \
             Gugu/Window/Camera.h \

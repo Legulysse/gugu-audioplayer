@@ -236,6 +236,7 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             gugu::FileInfo fileInfo(resourceID);
 
             gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
+            gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
 
             gugu::MusicParameters params;
             params.musicID = resourceID;
@@ -244,7 +245,13 @@ void MainWindow::OnDropEvent(class QDropEvent* event)
             vecPlaylist.push_back(params);
 
             // Update UI
-            m_pListPlay->addItem(QString::fromLocal8Bit(resourceID.c_str()));
+            QTime timeTotal(0, 0, 0, 0);
+            timeTotal = timeTotal.addMSecs(music->GetDuration().ms());
+
+            QString strTime = timeTotal.toString(Qt::ISODate);
+
+            //m_pListPlay->addItem(QString::fromLocal8Bit(resourceID.c_str()));
+            m_pListPlay->addItem(QString("[%2]  %1").arg(QString::fromLocal8Bit(fileInfo.GetPrettyName().c_str()), strTime));
         }
 
         gugu::GetAudio()->PlayMusicList(vecPlaylist);

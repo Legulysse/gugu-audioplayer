@@ -3,14 +3,14 @@
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
 INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/Sources \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
+                $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesEngine \
+                $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/include \
+                $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesPugiXml
 
 DEPENDPATH +=   $$PATH_SOLUTION_ROOT/Sources \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesEngine \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include \
-                $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
+                $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesEngine \
+                $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/include \
+                $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesPugiXml
 
 VPATH +=	$$PATH_SOLUTION_ROOT/Sources
 
@@ -51,7 +51,7 @@ CONFIG(debug, debug|release) {
             -lSFML-s-d \
             -lPugiXml-s-d
 
-    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/libs-mingw/x86
+    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/libs-mingw/x86
     LIBS += -lfreetype \
             -lgdi32 \
             -lopengl32 \
@@ -79,7 +79,7 @@ CONFIG(debug, debug|release) {
             -lSFML-s \
             -lPugiXml-s
 
-    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/libs-mingw/x86
+    QMAKE_LIBDIR += $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/libs-mingw/x86
     LIBS += -lfreetype \
             -lgdi32 \
             -lopengl32 \

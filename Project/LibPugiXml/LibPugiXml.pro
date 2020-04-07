@@ -2,9 +2,9 @@
 
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesPugiXml
 
-VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesPugiXml
+VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesPugiXml
 
 
 #***  PugiXml  ***#

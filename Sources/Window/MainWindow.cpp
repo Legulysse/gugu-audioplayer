@@ -293,9 +293,9 @@ void MainWindow::OnOpenAbout()
 
 void MainWindow::OnUpdateEngine()
 {
-    gugu::GetEngine()->Step(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
+    gugu::GetEngine()->RunSingleLoop(gugu::DeltaTime(m_pTimerUpdateEngine->interval()));
 
-    gugu::MusicInstance* pMusicInstance = gugu::GetAudio()->GetCurrentMusicInstance();
+    gugu::MusicInstance* pMusicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
     if (pMusicInstance)
     {
         QTime timeCurrent(0, 0, 0, 0);
@@ -323,7 +323,7 @@ void MainWindow::OnUpdateEngine()
 
 void MainWindow::OnControlPlay()
 {
-    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
     if (pMusic)
     {
         pMusic->Play();
@@ -332,7 +332,7 @@ void MainWindow::OnControlPlay()
 
 void MainWindow::OnControlPause()
 {
-    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
     if (pMusic)
     {
         pMusic->Pause();
@@ -341,7 +341,7 @@ void MainWindow::OnControlPause()
 
 void MainWindow::OnControlStop()
 {
-    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
     if (pMusic)
     {
         pMusic->Stop();
@@ -355,7 +355,7 @@ void MainWindow::OnVolumeSliderMoved(int value)
 
 void MainWindow::OnSeekSliderMoved(int value)
 {
-    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance();
+    gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
     if (pMusic)
     {
         pMusic->SetPlayOffset(gugu::DeltaTime(value));

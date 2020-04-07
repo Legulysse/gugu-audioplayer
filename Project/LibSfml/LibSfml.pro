@@ -2,19 +2,19 @@
 
 PATH_SOLUTION_ROOT = $$_PRO_FILE_PWD_/../..
 
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/src
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/AL
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/FLAC
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/freetype2
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/jpeg
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/ogg
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/stb_image
-INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/extlibs/headers/vorbis
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/include
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/src
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/AL
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/FLAC
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/freetype2
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/jpeg
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/ogg
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/stb_image
+INCLUDEPATH +=	$$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/extlibs/headers/vorbis
 
-VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/include
-VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/version_current/Dev/SourcesSFML/src
+VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/include
+VPATH += $$PATH_SOLUTION_ROOT/GuguEngine/Dev/SourcesSFML/src
 
 
 #***  Sfml  ***#

@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
     EngineConfig config;
     config.applicationName = "Gugu::AudioPlayer";
     config.pathAssets = "Assets";
+    config.applicationIcon = "music_beam.png";
     config.defaultFont = "Spaceranger.ttf";
     config.debugFont = "Roboto-Regular.ttf";
     config.gameWindow = EGameWindow::Sfml;

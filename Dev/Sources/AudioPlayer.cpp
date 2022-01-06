@@ -9,10 +9,15 @@
 
 #include "Gugu/Engine.h"
 #include "Gugu/Window/Window.h"
+#include "Gugu/Resources/ManagerResources.h"
+#include "Gugu/Resources/Music.h"
+#include "Gugu/Audio/ManagerAudio.h"
+#include "Gugu/Audio/MusicInstance.h"
 #include "Gugu/System/SystemUtility.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <imgui_stdlib.h>
 
 ////////////////////////////////////////////////////////////////
 // File Implementation
@@ -21,6 +26,7 @@ namespace gugu {
     
 AudioPlayer::AudioPlayer()
     : m_resetPanels(false)
+    , m_isTestPlaying(false)
 {
 }
 
@@ -31,6 +37,8 @@ AudioPlayer::~AudioPlayer()
 void AudioPlayer::AppStart()
 {
     RegisterHandlerEvents(GetGameWindow());
+
+    gugu::GetAudio()->SetVolumeMaster(0.3f);
 
     // Additional ImGui Setup.
     ImGuiIO& io = ImGui::GetIO();
@@ -98,6 +106,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         //ImGuiID dock_id_up = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Up, 0.20f, NULL, &dock_main_id);
         ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
 
+        ImGui::DockBuilderDockWindow("Play Controls", dock_id_down);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 
@@ -106,7 +115,93 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
     //----------------------------------------------
 
+    // Update Play Controls panel.
+    if (ImGui::Begin("Play Controls", false))
+    {
+        ImGui::InputText("Directory", &m_lastDirectory);
 
+        float volume = GetAudio()->GetVolumeMaster();
+        if (ImGui::SliderFloat("Volume", &volume, 0.f, 2.f))
+        {
+            GetAudio()->SetVolumeMaster(volume);
+        }
+
+        ImGui::Spacing();
+
+        if (!m_isTestPlaying)
+        {
+            if (ImGui::Button("Start Playlist"))
+            {
+                m_isTestPlaying = true;
+
+                std::vector<FileInfo> files;
+                GetFilesList(m_lastDirectory, files, true);
+
+                std::vector<gugu::MusicParameters> vecPlaylist;
+                for (size_t i = 0; i < files.size(); ++i)
+                {
+                    std::string resourceID = files[i].GetPathName();
+                    gugu::FileInfo fileInfo(resourceID);
+
+                    //TODO: test already existing ressource.
+                    //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
+                    gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
+                    gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
+
+                    gugu::MusicParameters params;
+                    params.musicID = resourceID;
+                    params.fadeIn = 0.0f;
+                    params.fadeOut = 0.0f;
+                    vecPlaylist.push_back(params);
+                }
+
+                gugu::GetAudio()->PlayMusicList(vecPlaylist);
+
+                //gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
+                //if (pMusic)
+                //{
+                //    pMusic->Play();
+                //}
+            }
+        }
+        else
+        {
+            gugu::MusicInstance* pMusicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
+            if (pMusicInstance)
+            {
+                DeltaTime offset = pMusicInstance->GetPlayOffset();
+                DeltaTime duration = pMusicInstance->GetDuration();
+
+                ImGui::Text("Track : %s", pMusicInstance->GetMusic()->GetFileInfoRef().GetName().c_str());
+                ImGui::Text(StringFormat("Time : {0} / {1}", (int)pMusicInstance->GetPlayOffset().s(), (int)pMusicInstance->GetDuration().s()).c_str());
+
+                int seekPosition = offset.ms();
+                if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.ms()))
+                {
+                    pMusicInstance->SetPlayOffset(DeltaTime(seekPosition));
+                }
+            }
+
+            ImGui::Spacing();
+            if (ImGui::Button("Next Track"))
+            {
+                gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
+                if (pMusic)
+                {
+                    pMusic->Stop();
+                }
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Stop Playlist"))
+            {
+                m_isTestPlaying = false;
+
+                gugu::GetAudio()->StopMusic(0.f);
+            }
+        }
+    }
+    ImGui::End();
 
     //----------------------------------------------
 

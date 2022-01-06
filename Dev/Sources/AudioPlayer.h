@@ -28,6 +28,9 @@ public:
 private:
 
     bool m_resetPanels;
+
+    std::string m_lastDirectory;
+    bool m_isTestPlaying;
 };
 
 }   //namespace gugu

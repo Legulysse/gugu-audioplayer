@@ -2,11 +2,9 @@
 // Includes
 
 #include "Gugu/Common.h"
+#include "AudioPlayer.h"
 
 #include "Gugu/Engine.h"
-#include "Gugu/Window/Window.h"
-#include "Gugu/Element/2D/ElementSprite.h"
-#include "Gugu/Element/2D/ElementText.h"
 
 using namespace gugu;
 
@@ -15,7 +13,15 @@ using namespace gugu;
 
 int main(int argc, char* argv[])
 {
-    //Init engine
+#if defined(GUGU_ENV_VISUAL )
+
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+#endif
+
+    //----------------------------------------------
+    // Init engine
+
     EngineConfig config;
     config.applicationName = "Gugu::AudioPlayer";
     config.pathAssets = "Assets";
@@ -29,23 +35,8 @@ int main(int argc, char* argv[])
     GetEngine()->Init(config);
 
     //----------------------------------------------
-    
-    ElementSprite* sprite = GetGameWindow()->GetUINode()->AddChild<ElementSprite>();
-    sprite->SetTexture("sfml-logo-small.png");
-    sprite->SetUnifiedOrigin(UDim2::POSITION_CENTER);
-    sprite->SetUnifiedPosition(UDim2(0.5f, 0.75f));
 
-    ElementText* text = GetGameWindow()->GetUINode()->AddChild<ElementText>();
-    text->SetFont("Spaceranger.ttf");
-    text->SetText("Hello World !");
-    text->SetFontSize(48);
-    text->SetUnifiedOrigin(UDim2::POSITION_CENTER);
-    text->SetUnifiedPosition(UDim2(0.5f, 0.25f));
-
-    //----------------------------------------------
-
-    GetEngine()->RunMainLoop();
-    GetEngine()->Release();
+    GetEngine()->RunApplication(new AudioPlayer);
 
     return 0;
 }

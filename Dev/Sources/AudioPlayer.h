@@ -6,6 +6,8 @@
 #include "Gugu/Core/Application.h"
 #include "Gugu/Events/EventListener.h"
 
+#include <vector>
+
 ////////////////////////////////////////////////////////////////
 // File Declarations
 
@@ -31,6 +33,14 @@ private:
 
     std::string m_lastDirectory;
     bool m_isTestPlaying;
+
+    struct AlbumDirectory
+    {
+        std::string directoryName;
+        std::vector<std::string> files;
+    };
+    std::vector<AlbumDirectory> m_albumDirectories;
+    size_t m_currentAlbumDirectory;
 };
 
 }   //namespace gugu

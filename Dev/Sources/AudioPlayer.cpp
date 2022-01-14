@@ -14,6 +14,7 @@
 #include "Gugu/Audio/ManagerAudio.h"
 #include "Gugu/Audio/MusicInstance.h"
 #include "Gugu/System/SystemUtility.h"
+#include "Gugu/Math/Random.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -27,6 +28,7 @@ namespace gugu {
 AudioPlayer::AudioPlayer()
     : m_resetPanels(false)
     , m_isTestPlaying(false)
+    , m_currentAlbumDirectory((size_t)-1)
 {
 }
 
@@ -132,72 +134,115 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         {
             if (ImGui::Button("Start Playlist"))
             {
-                m_isTestPlaying = true;
+                m_isTestPlaying = false;
+                m_albumDirectories.clear();
+                m_currentAlbumDirectory = (size_t)-1;
 
+                // Discover album directories.
                 std::vector<FileInfo> files;
                 GetFilesList(m_lastDirectory, files, true);
 
-                std::vector<gugu::MusicParameters> vecPlaylist;
+                std::map<std::string, size_t> existingDirectories;
                 for (size_t i = 0; i < files.size(); ++i)
                 {
-                    std::string resourceID = files[i].GetPathName();
-                    gugu::FileInfo fileInfo(resourceID);
+                    std::string directoryPath = files[i].GetPath();
+                    size_t directoryIndex = (size_t)-1;
 
-                    //TODO: test already existing ressource.
-                    //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
-                    gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
-                    gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
+                    auto it = existingDirectories.find(directoryPath);
+                    if (it == existingDirectories.end())
+                    {
+                        directoryIndex = m_albumDirectories.size();
+                        existingDirectories.insert(it, std::make_pair(directoryPath, directoryIndex));
 
-                    gugu::MusicParameters params;
-                    params.musicID = resourceID;
-                    params.fadeIn = 0.0f;
-                    params.fadeOut = 0.0f;
-                    vecPlaylist.push_back(params);
+                        AlbumDirectory newAlbumDirectory;
+                        newAlbumDirectory.directoryName = directoryPath;
+                        m_albumDirectories.push_back(newAlbumDirectory);
+                    }
+                    else
+                    {
+                        directoryIndex = it->second;
+                    }
+
+                    m_albumDirectories[directoryIndex].files.push_back(files[i].GetPathName());
                 }
 
-                gugu::GetAudio()->PlayMusicList(vecPlaylist);
+                if (!m_albumDirectories.empty())
+                {
+                    m_currentAlbumDirectory = GetRandom(m_albumDirectories.size());
 
-                //gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
-                //if (pMusic)
-                //{
-                //    pMusic->Play();
-                //}
+                    std::vector<gugu::MusicParameters> vecPlaylist;
+                    for (size_t i = 0; i < m_albumDirectories[m_currentAlbumDirectory].files.size(); ++i)
+                    {
+                        std::string resourceID = m_albumDirectories[m_currentAlbumDirectory].files[i];
+                        gugu::FileInfo fileInfo(resourceID);
+
+                        //TODO: test already existing ressource.
+                        //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
+                        gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
+                        gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
+
+                        gugu::MusicParameters params;
+                        params.musicID = resourceID;
+                        params.fadeIn = 0.0f;
+                        params.fadeOut = 0.0f;
+                        vecPlaylist.push_back(params);
+                    }
+
+                    m_isTestPlaying = true;
+                    gugu::GetAudio()->PlayMusicList(vecPlaylist);
+                }
             }
         }
         else
         {
-            gugu::MusicInstance* pMusicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
-            if (pMusicInstance)
+            gugu::MusicInstance* musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
+            if (musicInstance)
             {
-                DeltaTime offset = pMusicInstance->GetPlayOffset();
-                DeltaTime duration = pMusicInstance->GetDuration();
+                DeltaTime offset = musicInstance->GetPlayOffset();
+                DeltaTime duration = musicInstance->GetDuration();
 
-                ImGui::Text("Track : %s", pMusicInstance->GetMusic()->GetFileInfoRef().GetName().c_str());
-                ImGui::Text(StringFormat("Time : {0} / {1}", (int)pMusicInstance->GetPlayOffset().s(), (int)pMusicInstance->GetDuration().s()).c_str());
+                ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumDirectory].directoryName.c_str());
+                ImGui::Text("Track : %s", musicInstance->GetMusic()->GetFileInfoRef().GetName().c_str());
+                ImGui::Text(StringFormat("Time : {0} / {1}s", (int)musicInstance->GetPlayOffset().s(), (int)musicInstance->GetDuration().s()).c_str());
 
                 int seekPosition = offset.ms();
                 if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.ms()))
                 {
-                    pMusicInstance->SetPlayOffset(DeltaTime(seekPosition));
+                    musicInstance->SetPlayOffset(DeltaTime(seekPosition));
                 }
-            }
 
-            ImGui::Spacing();
-            if (ImGui::Button("Next Track"))
-            {
-                gugu::MusicInstance* pMusic = gugu::GetAudio()->GetCurrentMusicInstance(0);
-                if (pMusic)
+                ImGui::Spacing();
+
+                if (musicInstance->IsPaused())
                 {
-                    pMusic->Stop();
+                    if (ImGui::Button("Resume Track"))
+                    {
+                        musicInstance->Play();
+                    }
+                }
+                else
+                {
+                    if (ImGui::Button("Pause Track"))
+                    {
+                        musicInstance->Pause();
+                    }
+                }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Next Track"))
+                {
+                    musicInstance->Stop();
                 }
             }
 
             ImGui::SameLine();
             if (ImGui::Button("Stop Playlist"))
             {
-                m_isTestPlaying = false;
-
                 gugu::GetAudio()->StopMusic(0.f);
+
+                m_isTestPlaying = false;
+                m_albumDirectories.clear();
+                m_currentAlbumDirectory = (size_t)-1;
             }
         }
     }

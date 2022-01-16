@@ -139,8 +139,11 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                 m_currentAlbumDirectory = (size_t)-1;
 
                 // Discover album directories.
+                sf::String stringConversion = sf::String::fromUtf8(m_lastDirectory.begin(), m_lastDirectory.end());
+                std::string parseDirectory = stringConversion.toAnsiString();
+
                 std::vector<FileInfo> files;
-                GetFilesList(m_lastDirectory, files, true);
+                GetFilesList(parseDirectory, files, true);
 
                 std::map<std::string, size_t> existingDirectories;
                 for (size_t i = 0; i < files.size(); ++i)
@@ -188,8 +191,11 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                         vecPlaylist.push_back(params);
                     }
 
-                    m_isTestPlaying = true;
-                    gugu::GetAudio()->PlayMusicList(vecPlaylist);
+                    if (!vecPlaylist.empty())
+                    {
+                        m_isTestPlaying = true;
+                        gugu::GetAudio()->PlayMusicList(vecPlaylist);
+                    }
                 }
             }
         }
@@ -201,8 +207,18 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                 DeltaTime offset = musicInstance->GetPlayOffset();
                 DeltaTime duration = musicInstance->GetDuration();
 
-                ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumDirectory].directoryName.c_str());
-                ImGui::Text("Track : %s", musicInstance->GetMusic()->GetFileInfoRef().GetName().c_str());
+                {
+                    sf::String stringConversion = m_albumDirectories[m_currentAlbumDirectory].directoryName;
+                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
+                    ImGui::Text("Album : %s", stringAsUtf8.c_str());
+                }
+
+                {
+                    sf::String stringConversion = musicInstance->GetMusic()->GetFileInfoRef().GetName();
+                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
+                    ImGui::Text("Track : %s", stringAsUtf8.c_str());
+                }
+
                 ImGui::Text(StringFormat("Time : {0} / {1}s", (int)musicInstance->GetPlayOffset().s(), (int)musicInstance->GetDuration().s()).c_str());
 
                 int seekPosition = offset.ms();

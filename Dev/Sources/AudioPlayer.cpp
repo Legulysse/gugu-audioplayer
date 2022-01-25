@@ -15,6 +15,7 @@
 #include "Gugu/Audio/MusicInstance.h"
 #include "Gugu/System/SystemUtility.h"
 #include "Gugu/Math/Random.h"
+#include "Gugu/Version.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -56,10 +57,21 @@ void AudioPlayer::AppStop()
 void AudioPlayer::AppUpdate(const DeltaTime& dt)
 {
     // Main menu bar.
+    bool openModalAbout = false;
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("Application"))
         {
+            if (ImGui::MenuItem("About"))
+            {
+                openModalAbout = true;
+            }
+
+            if (ImGui::MenuItem("Reset UI"))
+            {
+                m_resetPanels = true;
+            }
+
             if (ImGui::MenuItem("Quit", "Alt+F4"))
             {
                 GetEngine()->StopMainLoop();
@@ -69,6 +81,27 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         }
 
         ImGui::EndMainMenuBar();
+    }
+
+    if (openModalAbout)
+    {
+        ImGui::OpenPopup("About");
+    }
+
+    bool unused_open = true;
+    if (ImGui::BeginPopupModal("About", &unused_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings))
+    {
+        ImGui::Text("gugu::AudioPlayer %s", "0.2");
+        ImGui::Spacing();
+        ImGui::Text("author: Legulysse");
+        ImGui::Spacing();
+        ImGui::Text("using gugu::Engine %s", GUGU_VERSION);
+
+        ImGui::Spacing();
+        if (ImGui::Button("Close"))
+            ImGui::CloseCurrentPopup();
+
+        ImGui::EndPopup();
     }
 
     // Docking panels ids.
@@ -92,10 +125,8 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
     ImGui::PopStyleVar(3);
 
     // Editor panels preset.
-    bool resetDocuments = false;
     if (ImGui::DockBuilderGetNode(dockspace_id) == NULL || m_resetPanels)
     {
-        resetDocuments = true;
         m_resetPanels = false;
 
         ImGui::DockBuilderRemoveNode(dockspace_id); // Clear out existing layout

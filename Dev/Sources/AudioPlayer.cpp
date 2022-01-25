@@ -253,7 +253,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                 ImGui::Text(StringFormat("Time : {0} / {1}s", (int)musicInstance->GetPlayOffset().s(), (int)musicInstance->GetDuration().s()).c_str());
 
                 int seekPosition = offset.ms();
-                if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.ms()))
+                if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.ms(), ""))
                 {
                     musicInstance->SetPlayOffset(DeltaTime(seekPosition));
                 }

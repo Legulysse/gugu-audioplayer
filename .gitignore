@@ -1,13 +1,6 @@
 **/*Dev/Build/*
 **/*Version/Build_*
 **/*Version/DiceRoller*
+build/*
 *.log
 imgui.ini
-
-
-
-build-AudioPlayer-Desktop*
-*/__pycache__/*
-*.log
-Libs/*
-*.pro.user

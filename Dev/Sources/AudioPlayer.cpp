@@ -40,7 +40,7 @@ void AudioPlayer::AppStart()
 {
     RegisterHandlerEvents(GetGameWindow());
 
-    gugu::GetAudio()->SetVolumeMaster(0.3f);
+    gugu::GetAudio()->SetVolumeMaster(0.1f);
 
     // Additional ImGui Setup.
     ImGuiIO& io = ImGui::GetIO();
@@ -109,6 +109,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
 
         ImGui::DockBuilderDockWindow("Play Controls", dock_id_down);
+        ImGui::DockBuilderDockWindow("Playlist", dock_main_id);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 
@@ -117,11 +118,70 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
     //----------------------------------------------
 
-    // Update Play Controls panel.
-    if (ImGui::Begin("Play Controls", false))
+    // Update Playlist
+    if (ImGui::Begin("Playlist", false))
     {
         ImGui::InputText("Directory", &m_lastDirectory);
 
+        if (ImGui::Button("Parse and Run Playlist"))
+        {
+            ParseAndRunPlaylist();
+        }
+
+        ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
+        if (ImGui::BeginTable("Albums Table", 2, flags))
+        {
+            ImGui::TableSetupColumn("#", ImGuiTableColumnFlags_WidthFixed, 30.f);
+            ImGui::TableSetupColumn("album", ImGuiTableColumnFlags_WidthStretch, 0.f);
+            ImGui::TableSetupScrollFreeze(0, 1);
+            ImGui::TableHeadersRow();
+
+            // TODO: handle sort (ImGuiTableSortSpecs).
+            // TODO: handle big list (ImGuiListClipper).
+            for (size_t rowIndex = 0; rowIndex < m_albumDirectories.size(); ++rowIndex)
+            {
+                ImGui::PushID(rowIndex);
+
+                float row_min_height = 0.f;
+                ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
+
+                if (rowIndex == 0)
+                {
+                    // Setup ItemWidth once.
+                    int headerIndex = 0;
+
+                    ImGui::TableSetColumnIndex(headerIndex++);
+                    ImGui::PushItemWidth(-1);
+                    ImGui::TableSetColumnIndex(headerIndex++);
+                    ImGui::PushItemWidth(-1);
+                }
+
+                int columnIndex = 0;
+                ImGui::TableSetColumnIndex(columnIndex++);
+
+                char label[32];
+                sprintf(label, "%04d", rowIndex);
+                ImGui::Text(label);
+
+                {
+                    ImGui::TableSetColumnIndex(columnIndex++);
+
+                    sf::String stringConversion = m_albumDirectories[rowIndex].directoryName;
+                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
+                    ImGui::Text("%s", stringAsUtf8.c_str());
+                }
+
+                ImGui::PopID();
+            }
+
+            ImGui::EndTable();
+        }
+    }
+    ImGui::End();
+
+    // Update Play Controls panel.
+    if (ImGui::Begin("Play Controls", false))
+    {
         float volume = GetAudio()->GetVolumeMaster();
         if (ImGui::SliderFloat("Volume", &volume, 0.f, 2.f))
         {
@@ -130,57 +190,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
         ImGui::Spacing();
 
-        if (!m_isRunningPlaylist)
-        {
-            if (ImGui::Button("Start Playlist"))
-            {
-                m_isRunningPlaylist = false;
-                m_albumDirectories.clear();
-                m_nextAlbumIndexes.clear();
-                m_currentAlbumIndex = (size_t)-1;
-
-                // Discover album directories.
-                sf::String stringConversion = sf::String::fromUtf8(m_lastDirectory.begin(), m_lastDirectory.end());
-                std::string parseDirectory = stringConversion.toAnsiString();
-
-                std::vector<FileInfo> files;
-                GetFilesList(parseDirectory, files, true);
-
-                std::set<std::string> validExtensions{ "ogg", "flac" };
-                std::map<std::string, size_t> existingDirectories;
-                for (size_t i = 0; i < files.size(); ++i)
-                {
-                    if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
-                    {
-                        std::string filePathName = files[i].GetPathName();
-                        std::string directoryPath = files[i].GetPath();
-                        size_t directoryIndex = (size_t)-1;
-
-                        auto it = existingDirectories.find(directoryPath);
-                        if (it == existingDirectories.end())
-                        {
-                            directoryIndex = m_albumDirectories.size();
-                            existingDirectories.insert(it, std::make_pair(directoryPath, directoryIndex));
-
-                            AlbumDirectory newAlbumDirectory;
-                            newAlbumDirectory.directoryName = directoryPath;
-
-                            m_albumDirectories.push_back(newAlbumDirectory);
-                            m_nextAlbumIndexes.push_back(directoryIndex);
-                        }
-                        else
-                        {
-                            directoryIndex = it->second;
-                        }
-
-                        m_albumDirectories[directoryIndex].files.push_back(filePathName);
-                    }
-                }
-
-                RunNextPlaylistAlbum();
-            }
-        }
-        else
+        if (m_isRunningPlaylist)
         {
             // Handle album transition when running album ends.
             gugu::MusicInstance* musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
@@ -275,6 +285,56 @@ bool AudioPlayer::OnSFEvent(const sf::Event& event)
         return false;
 
     return true;
+}
+
+void AudioPlayer::ParseAndRunPlaylist()
+{
+    gugu::GetAudio()->StopMusic(0.f);
+
+    m_isRunningPlaylist = false;
+    m_albumDirectories.clear();
+    m_nextAlbumIndexes.clear();
+    m_currentAlbumIndex = (size_t)-1;
+
+    // Discover album directories.
+    sf::String stringConversion = sf::String::fromUtf8(m_lastDirectory.begin(), m_lastDirectory.end());
+    std::string parseDirectory = stringConversion.toAnsiString();
+
+    std::vector<FileInfo> files;
+    GetFilesList(parseDirectory, files, true);
+
+    std::set<std::string> validExtensions{ "wav", "ogg", "flac" };
+    std::map<std::string, size_t> existingDirectories;
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
+        {
+            std::string filePathName = files[i].GetPathName();
+            std::string directoryPath = files[i].GetPath();
+            size_t directoryIndex = (size_t)-1;
+
+            auto it = existingDirectories.find(directoryPath);
+            if (it == existingDirectories.end())
+            {
+                directoryIndex = m_albumDirectories.size();
+                existingDirectories.insert(it, std::make_pair(directoryPath, directoryIndex));
+
+                AlbumDirectory newAlbumDirectory;
+                newAlbumDirectory.directoryName = directoryPath;
+
+                m_albumDirectories.push_back(newAlbumDirectory);
+                m_nextAlbumIndexes.push_back(directoryIndex);
+            }
+            else
+            {
+                directoryIndex = it->second;
+            }
+
+            m_albumDirectories[directoryIndex].files.push_back(filePathName);
+        }
+    }
+
+    RunNextPlaylistAlbum();
 }
 
 void AudioPlayer::RunNextPlaylistAlbum()

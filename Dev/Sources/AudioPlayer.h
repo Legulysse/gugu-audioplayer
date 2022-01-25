@@ -29,6 +29,7 @@ public:
 
 private:
 
+    void ParseAndRunPlaylist();
     void RunNextPlaylistAlbum();
 
 private:

@@ -27,8 +27,8 @@ namespace gugu {
     
 AudioPlayer::AudioPlayer()
     : m_resetPanels(false)
-    , m_isTestPlaying(false)
-    , m_currentAlbumDirectory((size_t)-1)
+    , m_isRunningPlaylist(false)
+    , m_currentAlbumIndex((size_t)-1)
 {
 }
 
@@ -130,13 +130,14 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
         ImGui::Spacing();
 
-        if (!m_isTestPlaying)
+        if (!m_isRunningPlaylist)
         {
             if (ImGui::Button("Start Playlist"))
             {
-                m_isTestPlaying = false;
+                m_isRunningPlaylist = false;
                 m_albumDirectories.clear();
-                m_currentAlbumDirectory = (size_t)-1;
+                m_nextAlbumIndexes.clear();
+                m_currentAlbumIndex = (size_t)-1;
 
                 // Discover album directories.
                 sf::String stringConversion = sf::String::fromUtf8(m_lastDirectory.begin(), m_lastDirectory.end());
@@ -145,70 +146,59 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                 std::vector<FileInfo> files;
                 GetFilesList(parseDirectory, files, true);
 
+                std::set<std::string> validExtensions{ "ogg", "flac" };
                 std::map<std::string, size_t> existingDirectories;
                 for (size_t i = 0; i < files.size(); ++i)
                 {
-                    std::string directoryPath = files[i].GetPath();
-                    size_t directoryIndex = (size_t)-1;
-
-                    auto it = existingDirectories.find(directoryPath);
-                    if (it == existingDirectories.end())
+                    if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
                     {
-                        directoryIndex = m_albumDirectories.size();
-                        existingDirectories.insert(it, std::make_pair(directoryPath, directoryIndex));
+                        std::string filePathName = files[i].GetPathName();
+                        std::string directoryPath = files[i].GetPath();
+                        size_t directoryIndex = (size_t)-1;
 
-                        AlbumDirectory newAlbumDirectory;
-                        newAlbumDirectory.directoryName = directoryPath;
-                        m_albumDirectories.push_back(newAlbumDirectory);
-                    }
-                    else
-                    {
-                        directoryIndex = it->second;
-                    }
+                        auto it = existingDirectories.find(directoryPath);
+                        if (it == existingDirectories.end())
+                        {
+                            directoryIndex = m_albumDirectories.size();
+                            existingDirectories.insert(it, std::make_pair(directoryPath, directoryIndex));
 
-                    m_albumDirectories[directoryIndex].files.push_back(files[i].GetPathName());
-                }
+                            AlbumDirectory newAlbumDirectory;
+                            newAlbumDirectory.directoryName = directoryPath;
 
-                if (!m_albumDirectories.empty())
-                {
-                    m_currentAlbumDirectory = GetRandom(m_albumDirectories.size());
+                            m_albumDirectories.push_back(newAlbumDirectory);
+                            m_nextAlbumIndexes.push_back(directoryIndex);
+                        }
+                        else
+                        {
+                            directoryIndex = it->second;
+                        }
 
-                    std::vector<gugu::MusicParameters> vecPlaylist;
-                    for (size_t i = 0; i < m_albumDirectories[m_currentAlbumDirectory].files.size(); ++i)
-                    {
-                        std::string resourceID = m_albumDirectories[m_currentAlbumDirectory].files[i];
-                        gugu::FileInfo fileInfo(resourceID);
-
-                        //TODO: test already existing ressource.
-                        //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
-                        gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
-                        gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
-
-                        gugu::MusicParameters params;
-                        params.musicID = resourceID;
-                        params.fadeIn = 0.0f;
-                        params.fadeOut = 0.0f;
-                        vecPlaylist.push_back(params);
-                    }
-
-                    if (!vecPlaylist.empty())
-                    {
-                        m_isTestPlaying = true;
-                        gugu::GetAudio()->PlayMusicList(vecPlaylist);
+                        m_albumDirectories[directoryIndex].files.push_back(filePathName);
                     }
                 }
+
+                RunNextPlaylistAlbum();
             }
         }
         else
         {
+            // Handle album transition when running album ends.
             gugu::MusicInstance* musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
+            if (!musicInstance)
+            {
+                RunNextPlaylistAlbum();
+
+                musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
+            }
+
+            // Default Track/Album controls.
             if (musicInstance)
             {
                 DeltaTime offset = musicInstance->GetPlayOffset();
                 DeltaTime duration = musicInstance->GetDuration();
 
                 {
-                    sf::String stringConversion = m_albumDirectories[m_currentAlbumDirectory].directoryName;
+                    sf::String stringConversion = m_albumDirectories[m_currentAlbumIndex].directoryName;
                     std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
                     ImGui::Text("Album : %s", stringAsUtf8.c_str());
                 }
@@ -249,6 +239,14 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                 {
                     musicInstance->Stop();
                 }
+
+                ImGui::SameLine();
+                if (ImGui::Button("Next Album"))
+                {
+                    gugu::GetAudio()->StopMusic(0.f);
+
+                    RunNextPlaylistAlbum();
+                }
             }
 
             ImGui::SameLine();
@@ -256,9 +254,10 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
             {
                 gugu::GetAudio()->StopMusic(0.f);
 
-                m_isTestPlaying = false;
+                m_isRunningPlaylist = false;
                 m_albumDirectories.clear();
-                m_currentAlbumDirectory = (size_t)-1;
+                m_nextAlbumIndexes.clear();
+                m_currentAlbumIndex = (size_t)-1;
             }
         }
     }
@@ -276,6 +275,60 @@ bool AudioPlayer::OnSFEvent(const sf::Event& event)
         return false;
 
     return true;
+}
+
+void AudioPlayer::RunNextPlaylistAlbum()
+{
+    if (!m_albumDirectories.empty())
+    {
+        // Select the next album index.
+        if (m_nextAlbumIndexes.empty())
+        {
+            for (size_t index = 0; index < m_albumDirectories.size(); ++index)
+            {
+                m_nextAlbumIndexes.push_back(index);
+            }
+        }
+
+        size_t randomIndex = GetRandom(m_nextAlbumIndexes.size());
+        size_t nextIndex = m_nextAlbumIndexes[randomIndex];
+
+        bool isReset = m_nextAlbumIndexes.size() == m_albumDirectories.size();
+        if (isReset && m_nextAlbumIndexes.size() > 1 && nextIndex == m_currentAlbumIndex)
+        {
+            // If we are starting a new loop of a list of albums, ensure we dont replay the very last album played.
+            randomIndex = randomIndex + 1 < m_nextAlbumIndexes.size() ? randomIndex + 1 : 0;
+            nextIndex = m_nextAlbumIndexes[randomIndex];
+        }
+
+        m_currentAlbumIndex = nextIndex;
+        StdVectorRemoveAt(m_nextAlbumIndexes, randomIndex);
+
+        // Load the new album.
+        std::vector<gugu::MusicParameters> vecPlaylist;
+        for (size_t i = 0; i < m_albumDirectories[m_currentAlbumIndex].files.size(); ++i)
+        {
+            std::string resourceID = m_albumDirectories[m_currentAlbumIndex].files[i];
+            gugu::FileInfo fileInfo(resourceID);
+
+            //TODO: test already existing ressource.
+            //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
+            gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
+            gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
+
+            gugu::MusicParameters params;
+            params.musicID = resourceID;
+            params.fadeIn = 0.0f;
+            params.fadeOut = 0.0f;
+            vecPlaylist.push_back(params);
+        }
+
+        if (!vecPlaylist.empty())
+        {
+            m_isRunningPlaylist = true;
+            gugu::GetAudio()->PlayMusicList(vecPlaylist, false, 0);
+        }
+    }
 }
 
 }   //namespace gugu

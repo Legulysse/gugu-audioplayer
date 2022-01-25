@@ -29,10 +29,14 @@ public:
 
 private:
 
+    void RunNextPlaylistAlbum();
+
+private:
+
     bool m_resetPanels;
 
     std::string m_lastDirectory;
-    bool m_isTestPlaying;
+    bool m_isRunningPlaylist;
 
     struct AlbumDirectory
     {
@@ -40,7 +44,8 @@ private:
         std::vector<std::string> files;
     };
     std::vector<AlbumDirectory> m_albumDirectories;
-    size_t m_currentAlbumDirectory;
+    std::vector<size_t> m_nextAlbumIndexes;
+    size_t m_currentAlbumIndex;
 };
 
 }   //namespace gugu

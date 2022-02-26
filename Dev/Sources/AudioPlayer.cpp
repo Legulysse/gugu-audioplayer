@@ -17,6 +17,8 @@
 #include "Gugu/Math/Random.h"
 #include "Gugu/Version.h"
 
+#include <SFML/System/String.hpp>
+
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_stdlib.h>
@@ -235,8 +237,8 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
             // Default Track/Album controls.
             if (musicInstance)
             {
-                DeltaTime offset = musicInstance->GetPlayOffset();
-                DeltaTime duration = musicInstance->GetDuration();
+                sf::Time offset = musicInstance->GetPlayOffset();
+                sf::Time duration = musicInstance->GetDuration();
 
                 {
                     sf::String stringConversion = m_albumDirectories[m_currentAlbumIndex].directoryName;
@@ -250,12 +252,12 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                     ImGui::Text("Track : %s", stringAsUtf8.c_str());
                 }
 
-                ImGui::Text(StringFormat("Time : {0} / {1}s", (int)musicInstance->GetPlayOffset().s(), (int)musicInstance->GetDuration().s()).c_str());
+                ImGui::Text(StringFormat("Time : {0} / {1}s", (int)offset.asSeconds(), (int)duration.asSeconds()).c_str());
 
-                int seekPosition = offset.ms();
-                if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.ms(), ""))
+                int seekPosition = offset.asMilliseconds();
+                if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.asMilliseconds(), ""))
                 {
-                    musicInstance->SetPlayOffset(DeltaTime(seekPosition));
+                    musicInstance->SetPlayOffset(sf::milliseconds(seekPosition));
                 }
 
                 ImGui::Spacing();

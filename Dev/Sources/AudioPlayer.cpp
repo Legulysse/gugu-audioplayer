@@ -247,7 +247,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
                 }
 
                 {
-                    sf::String stringConversion = musicInstance->GetMusic()->GetFileInfoRef().GetName();
+                    sf::String stringConversion = musicInstance->GetMusic()->GetFileInfo().GetName();
                     std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
                     ImGui::Text("Track : %s", stringAsUtf8.c_str());
                 }
@@ -343,7 +343,7 @@ void AudioPlayer::ParseAndRunPlaylist()
         if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
         {
             std::string filePathName = files[i].GetPathName();
-            std::string directoryPath = files[i].GetPath();
+            std::string directoryPath = files[i].GetPath(false);
             size_t directoryIndex = (size_t)-1;
 
             auto it = existingDirectories.find(directoryPath);

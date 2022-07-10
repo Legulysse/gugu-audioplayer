@@ -31,6 +31,7 @@ namespace gugu {
 AudioPlayer::AudioPlayer()
     : m_resetPanels(false)
     , m_isRunningPlaylist(false)
+    , m_loopAlbum(false)
     , m_currentAlbumIndex((size_t)-1)
 {
 }
@@ -142,7 +143,8 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
 
         ImGui::DockBuilderDockWindow("Play Controls", dock_id_down);
-        ImGui::DockBuilderDockWindow("Playlist", dock_main_id);
+        ImGui::DockBuilderDockWindow("Library", dock_main_id);
+        ImGui::DockBuilderDockWindow("History", dock_id_right);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 
@@ -151,14 +153,35 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
     //----------------------------------------------
 
-    // Update Playlist
-    if (ImGui::Begin("Playlist", false))
+    UpdateLibrary();
+    UpdateHistory();
+    UpdatePlayControls();
+
+    // End Dockspace Window.
+    ImGui::End();
+}
+
+void AudioPlayer::UpdateLibrary()
+{
+    if (ImGui::Begin("Library", false))
     {
         ImGui::InputText("Directory", &m_lastDirectory);
 
         if (ImGui::Button("Parse and Run Playlist"))
         {
             ParseAndRunPlaylist();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Stop Playlist"))
+        {
+            gugu::GetAudio()->StopMusic(0.f);
+
+            m_isRunningPlaylist = false;
+            m_albumDirectories.clear();
+            m_nextAlbumIndexes.clear();
+            m_lastAlbumIndexes.clear();
+            m_currentAlbumIndex = (size_t)-1;
         }
 
         ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
@@ -211,8 +234,64 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         }
     }
     ImGui::End();
+}
 
-    // Update Play Controls panel.
+void AudioPlayer::UpdateHistory()
+{
+    if (ImGui::Begin("History", false))
+    {
+        ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
+        if (ImGui::BeginTable("Albums Table", 2, flags))
+        {
+            ImGui::TableSetupColumn("#", ImGuiTableColumnFlags_WidthFixed, 30.f);
+            ImGui::TableSetupColumn("album", ImGuiTableColumnFlags_WidthStretch, 0.f);
+            ImGui::TableSetupScrollFreeze(0, 1);
+            ImGui::TableHeadersRow();
+
+            for (size_t rowIndex = 0; rowIndex < m_lastAlbumIndexes.size(); ++rowIndex)
+            {
+                ImGui::PushID(rowIndex);
+
+                float row_min_height = 0.f;
+                ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
+
+                if (rowIndex == 0)
+                {
+                    // Setup ItemWidth once.
+                    int headerIndex = 0;
+
+                    ImGui::TableSetColumnIndex(headerIndex++);
+                    ImGui::PushItemWidth(-1);
+                    ImGui::TableSetColumnIndex(headerIndex++);
+                    ImGui::PushItemWidth(-1);
+                }
+
+                int columnIndex = 0;
+                ImGui::TableSetColumnIndex(columnIndex++);
+
+                char label[32];
+                sprintf(label, "%04d", rowIndex);
+                ImGui::Text(label);
+
+                {
+                    ImGui::TableSetColumnIndex(columnIndex++);
+
+                    sf::String stringConversion = m_albumDirectories[m_lastAlbumIndexes[rowIndex]].directoryName;
+                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
+                    ImGui::Text("%s", stringAsUtf8.c_str());
+                }
+
+                ImGui::PopID();
+            }
+
+            ImGui::EndTable();
+        }
+    }
+    ImGui::End();
+}
+
+void AudioPlayer::UpdatePlayControls()
+{
     if (ImGui::Begin("Play Controls", false))
     {
         float volume = GetAudio()->GetVolumeMaster();
@@ -229,7 +308,14 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
             gugu::MusicInstance* musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
             if (!musicInstance)
             {
-                RunNextPlaylistAlbum();
+                if (m_loopAlbum)
+                {
+                    PlayCurrentAlbum();
+                }
+                else
+                {
+                    RunNextPlaylistAlbum();
+                }
 
                 musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
             }
@@ -290,25 +376,12 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
                     RunNextPlaylistAlbum();
                 }
-            }
 
-            ImGui::SameLine();
-            if (ImGui::Button("Stop Playlist"))
-            {
-                gugu::GetAudio()->StopMusic(0.f);
-
-                m_isRunningPlaylist = false;
-                m_albumDirectories.clear();
-                m_nextAlbumIndexes.clear();
-                m_currentAlbumIndex = (size_t)-1;
+                ImGui::SameLine();
+                ImGui::Checkbox("Loop Album", &m_loopAlbum);
             }
         }
     }
-    ImGui::End();
-
-    //----------------------------------------------
-
-    // End Dockspace Window.
     ImGui::End();
 }
 
@@ -327,6 +400,7 @@ void AudioPlayer::ParseAndRunPlaylist()
     m_isRunningPlaylist = false;
     m_albumDirectories.clear();
     m_nextAlbumIndexes.clear();
+    m_lastAlbumIndexes.clear();
     m_currentAlbumIndex = (size_t)-1;
 
     // Discover album directories.
@@ -397,7 +471,20 @@ void AudioPlayer::RunNextPlaylistAlbum()
         m_currentAlbumIndex = nextIndex;
         StdVectorRemoveAt(m_nextAlbumIndexes, randomIndex);
 
+        if (m_lastAlbumIndexes.empty() || m_lastAlbumIndexes.back() != nextIndex)
+        {
+            m_lastAlbumIndexes.push_back(nextIndex);
+        }
+
         // Load the new album.
+        PlayCurrentAlbum();
+    }
+}
+
+void AudioPlayer::PlayCurrentAlbum()
+{
+    if (!m_albumDirectories.empty() && m_currentAlbumIndex >= 0 && m_currentAlbumIndex < m_albumDirectories.size())
+    {
         std::vector<gugu::MusicParameters> vecPlaylist;
         for (size_t i = 0; i < m_albumDirectories[m_currentAlbumIndex].files.size(); ++i)
         {

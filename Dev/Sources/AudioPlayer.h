@@ -29,8 +29,13 @@ public:
 
 private:
 
+    void UpdateLibrary();
+    void UpdateHistory();
+    void UpdatePlayControls();
+
     void ParseAndRunPlaylist();
     void RunNextPlaylistAlbum();
+    void PlayCurrentAlbum();
 
 private:
 
@@ -38,6 +43,7 @@ private:
 
     std::string m_lastDirectory;
     bool m_isRunningPlaylist;
+    bool m_loopAlbum;
 
     struct AlbumDirectory
     {
@@ -46,6 +52,7 @@ private:
     };
     std::vector<AlbumDirectory> m_albumDirectories;
     std::vector<size_t> m_nextAlbumIndexes;
+    std::vector<size_t> m_lastAlbumIndexes;
     size_t m_currentAlbumIndex;
 };
 

@@ -31,6 +31,7 @@ private:
 
     void UpdateLibrary();
     void UpdateHistory();
+    void UpdateCurrentAlbum();
     void UpdatePlayControls();
 
     void ParseAndRunPlaylist();
@@ -48,7 +49,10 @@ private:
     struct AlbumDirectory
     {
         std::string directoryName;
+        std::basic_string<gugu::uint8> directoryName_utf8;
+
         std::vector<std::string> files;
+        std::vector<std::basic_string<gugu::uint8>> fileNames_utf8;
     };
     std::vector<AlbumDirectory> m_albumDirectories;
     std::vector<size_t> m_nextAlbumIndexes;

@@ -143,8 +143,9 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         ImGuiID dock_id_down = ImGui::DockBuilderSplitNode(dock_main_id, ImGuiDir_Down, 0.20f, NULL, &dock_main_id);
 
         ImGui::DockBuilderDockWindow("Play Controls", dock_id_down);
-        ImGui::DockBuilderDockWindow("Library", dock_main_id);
         ImGui::DockBuilderDockWindow("History", dock_id_right);
+        ImGui::DockBuilderDockWindow("Library", dock_main_id);
+        ImGui::DockBuilderDockWindow("Album", dock_main_id);
         ImGui::DockBuilderFinish(dockspace_id);
     }
 
@@ -155,6 +156,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
 
     UpdateLibrary();
     UpdateHistory();
+    UpdateCurrentAlbum();
     UpdatePlayControls();
 
     // End Dockspace Window.
@@ -193,41 +195,40 @@ void AudioPlayer::UpdateLibrary()
             ImGui::TableHeadersRow();
 
             // TODO: handle sort (ImGuiTableSortSpecs).
-            // TODO: handle big list (ImGuiListClipper).
-            for (size_t rowIndex = 0; rowIndex < m_albumDirectories.size(); ++rowIndex)
+            ImGuiListClipper clipper;
+            clipper.Begin(m_albumDirectories.size());
+            while (clipper.Step())
             {
-                ImGui::PushID(rowIndex);
-
-                float row_min_height = 0.f;
-                ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
-
-                if (rowIndex == 0)
+                for (int rowIndex = clipper.DisplayStart; rowIndex < clipper.DisplayEnd; rowIndex++)
                 {
-                    // Setup ItemWidth once.
-                    int headerIndex = 0;
+                    ImGui::PushID(rowIndex);
 
-                    ImGui::TableSetColumnIndex(headerIndex++);
-                    ImGui::PushItemWidth(-1);
-                    ImGui::TableSetColumnIndex(headerIndex++);
-                    ImGui::PushItemWidth(-1);
-                }
+                    float row_min_height = 0.f;
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
 
-                int columnIndex = 0;
-                ImGui::TableSetColumnIndex(columnIndex++);
+                    if (rowIndex == clipper.DisplayStart)
+                    {
+                        // Setup ItemWidth once.
+                        int headerIndex = 0;
 
-                char label[32];
-                sprintf(label, "%04d", rowIndex);
-                ImGui::Text(label);
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
+                    }
 
-                {
+                    int columnIndex = 0;
                     ImGui::TableSetColumnIndex(columnIndex++);
 
-                    sf::String stringConversion = m_albumDirectories[rowIndex].directoryName;
-                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
-                    ImGui::Text("%s", stringAsUtf8.c_str());
-                }
+                    char label[32];
+                    sprintf(label, "%04d", rowIndex);
+                    ImGui::Text(label);
 
-                ImGui::PopID();
+                    ImGui::TableSetColumnIndex(columnIndex++);
+                    ImGui::Text("%s", m_albumDirectories[rowIndex].directoryName_utf8.c_str());
+
+                    ImGui::PopID();
+                }
             }
 
             ImGui::EndTable();
@@ -248,43 +249,95 @@ void AudioPlayer::UpdateHistory()
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableHeadersRow();
 
-            for (size_t rowIndex = 0; rowIndex < m_lastAlbumIndexes.size(); ++rowIndex)
+            ImGuiListClipper clipper;
+            clipper.Begin(m_lastAlbumIndexes.size());
+            while (clipper.Step())
             {
-                ImGui::PushID(rowIndex);
-
-                float row_min_height = 0.f;
-                ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
-
-                if (rowIndex == 0)
+                for (int rowIndex = clipper.DisplayStart; rowIndex < clipper.DisplayEnd; rowIndex++)
                 {
-                    // Setup ItemWidth once.
-                    int headerIndex = 0;
+                    ImGui::PushID(rowIndex);
 
-                    ImGui::TableSetColumnIndex(headerIndex++);
-                    ImGui::PushItemWidth(-1);
-                    ImGui::TableSetColumnIndex(headerIndex++);
-                    ImGui::PushItemWidth(-1);
-                }
+                    float row_min_height = 0.f;
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
 
-                int columnIndex = 0;
-                ImGui::TableSetColumnIndex(columnIndex++);
+                    if (rowIndex == clipper.DisplayStart)
+                    {
+                        // Setup ItemWidth once.
+                        int headerIndex = 0;
 
-                char label[32];
-                sprintf(label, "%04d", rowIndex);
-                ImGui::Text(label);
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
+                    }
 
-                {
+                    int columnIndex = 0;
                     ImGui::TableSetColumnIndex(columnIndex++);
 
-                    sf::String stringConversion = m_albumDirectories[m_lastAlbumIndexes[rowIndex]].directoryName;
-                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
-                    ImGui::Text("%s", stringAsUtf8.c_str());
-                }
+                    char label[32];
+                    sprintf(label, "%04d", rowIndex);
+                    ImGui::Text(label);
 
-                ImGui::PopID();
+                    ImGui::TableSetColumnIndex(columnIndex++);
+                    ImGui::Text("%s", m_albumDirectories[m_lastAlbumIndexes[rowIndex]].directoryName_utf8.c_str());
+
+                    ImGui::PopID();
+                }
             }
 
             ImGui::EndTable();
+        }
+    }
+    ImGui::End();
+}
+
+void AudioPlayer::UpdateCurrentAlbum()
+{
+    if (ImGui::Begin("Album", false))
+    {
+        if (m_currentAlbumIndex != (size_t)-1)
+        {
+            ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
+            if (ImGui::BeginTable("Album Tracks Table", 2, flags))
+            {
+                ImGui::TableSetupColumn("#", ImGuiTableColumnFlags_WidthFixed, 30.f);
+                ImGui::TableSetupColumn("track", ImGuiTableColumnFlags_WidthStretch, 0.f);
+                ImGui::TableSetupScrollFreeze(0, 1);
+                ImGui::TableHeadersRow();
+
+                for (size_t rowIndex = 0; rowIndex < m_albumDirectories[m_currentAlbumIndex].files.size(); ++rowIndex)
+                {
+                    ImGui::PushID(rowIndex);
+
+                    float row_min_height = 0.f;
+                    ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
+
+                    if (rowIndex == 0)
+                    {
+                        // Setup ItemWidth once.
+                        int headerIndex = 0;
+
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
+                    }
+
+                    int columnIndex = 0;
+                    ImGui::TableSetColumnIndex(columnIndex++);
+
+                    char label[32];
+                    sprintf(label, "%04d", rowIndex);
+                    ImGui::Text(label);
+
+                    ImGui::TableSetColumnIndex(columnIndex++);
+                    ImGui::Text("%s", m_albumDirectories[m_currentAlbumIndex].fileNames_utf8[rowIndex].c_str());
+
+                    ImGui::PopID();
+                }
+
+                ImGui::EndTable();
+            }
         }
     }
     ImGui::End();
@@ -326,17 +379,10 @@ void AudioPlayer::UpdatePlayControls()
                 sf::Time offset = musicInstance->GetPlayOffset();
                 sf::Time duration = musicInstance->GetDuration();
 
-                {
-                    sf::String stringConversion = m_albumDirectories[m_currentAlbumIndex].directoryName;
-                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
-                    ImGui::Text("Album : %s", stringAsUtf8.c_str());
-                }
+                ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
 
-                {
-                    sf::String stringConversion = musicInstance->GetMusic()->GetFileInfo().GetName();
-                    std::basic_string<sf::Uint8> stringAsUtf8 = stringConversion.toUtf8();
-                    ImGui::Text("Track : %s", stringAsUtf8.c_str());
-                }
+                //TODO: find a way to retrieve playlist index, to use the filenames cache.
+                ImGui::Text("Track : %s", sf::String(musicInstance->GetMusic()->GetFileInfo().GetName()).toUtf8().c_str());
 
                 ImGui::Text(StringFormat("Time : {0} / {1}s", (int)offset.asSeconds(), (int)duration.asSeconds()).c_str());
 
@@ -438,6 +484,22 @@ void AudioPlayer::ParseAndRunPlaylist()
             }
 
             m_albumDirectories[directoryIndex].files.push_back(filePathName);
+        }
+    }
+
+    // Cache some data
+    for (size_t i = 0; i < m_albumDirectories.size(); ++i)
+    {
+        m_albumDirectories[i].directoryName_utf8 = sf::String(m_albumDirectories[i].directoryName).toUtf8();
+
+        m_albumDirectories[i].fileNames_utf8.resize(m_albumDirectories[i].files.size());
+
+        for (size_t ii = 0; ii < m_albumDirectories[i].files.size(); ++ii)
+        {
+            std::string fileName;
+            FileFromPathFile(m_albumDirectories[i].files[ii], fileName);
+
+            m_albumDirectories[i].fileNames_utf8[ii] = sf::String(fileName).toUtf8();
         }
     }
 

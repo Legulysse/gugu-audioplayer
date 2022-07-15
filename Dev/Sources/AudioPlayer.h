@@ -29,6 +29,9 @@ public:
 
 private:
 
+    void LoadUserSettings();
+    void SaveUserSettings();
+
     void UpdateLibrary();
     void UpdateHistory();
     void UpdateCurrentAlbum();
@@ -42,7 +45,7 @@ private:
 
     bool m_resetPanels;
 
-    std::string m_lastDirectory;
+    std::string m_libraryDirectory;
     bool m_isRunningPlaylist;
     bool m_loopAlbum;
 

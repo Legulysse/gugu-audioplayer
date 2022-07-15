@@ -17,6 +17,8 @@
 #include "Gugu/Math/Random.h"
 #include "Gugu/Version.h"
 
+#include "Gugu/External/PugiXmlWrap.h"
+
 #include <SFML/System/String.hpp>
 
 #include <imgui.h>
@@ -51,10 +53,35 @@ void AudioPlayer::AppStart()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // TODO: Does not seem supported by the SFML backend.
     io.ConfigWindowsResizeFromEdges = true;
+
+    LoadUserSettings();
 }
 
 void AudioPlayer::AppStop()
 {
+}
+
+void AudioPlayer::LoadUserSettings()
+{
+    pugi::xml_document document;
+    pugi::xml_parse_result result = document.load_file("User/Settings.xml");
+    if (!result)
+        return;
+
+    pugi::xml_node nodeRoot = document.child("Settings");
+    if (!nodeRoot)
+        return;
+
+    pugi::xml_node nodeLibrary = nodeRoot.child("Library");
+    if (!nodeLibrary)
+        return;
+
+    m_libraryDirectory = nodeLibrary.attribute("path").value();
+}
+
+void AudioPlayer::SaveUserSettings()
+{
+    //TODO
 }
 
 void AudioPlayer::AppUpdate(const DeltaTime& dt)
@@ -167,7 +194,7 @@ void AudioPlayer::UpdateLibrary()
 {
     if (ImGui::Begin("Library", false))
     {
-        ImGui::InputText("Directory", &m_lastDirectory);
+        ImGui::InputText("Directory", &m_libraryDirectory);
 
         if (ImGui::Button("Parse and Run Playlist"))
         {
@@ -184,6 +211,12 @@ void AudioPlayer::UpdateLibrary()
             m_nextAlbumIndexes.clear();
             m_lastAlbumIndexes.clear();
             m_currentAlbumIndex = (size_t)-1;
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Open in Explorer"))
+        {
+            OpenFileExplorer(m_libraryDirectory);
         }
 
         ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
@@ -297,6 +330,9 @@ void AudioPlayer::UpdateCurrentAlbum()
     {
         if (m_currentAlbumIndex != (size_t)-1)
         {
+            ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
+            ImGui::Spacing();
+
             ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
             if (ImGui::BeginTable("Album Tracks Table", 2, flags))
             {
@@ -450,7 +486,7 @@ void AudioPlayer::ParseAndRunPlaylist()
     m_currentAlbumIndex = (size_t)-1;
 
     // Discover album directories.
-    sf::String stringConversion = sf::String::fromUtf8(m_lastDirectory.begin(), m_lastDirectory.end());
+    sf::String stringConversion = sf::String::fromUtf8(m_libraryDirectory.begin(), m_libraryDirectory.end());
     std::string parseDirectory = stringConversion.toAnsiString();
 
     std::vector<FileInfo> files;

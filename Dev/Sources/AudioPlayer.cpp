@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////
 // Includes
 
+#include "Gugu/Version.h"
 #include "Gugu/Engine.h"
 #include "Gugu/Window/Window.h"
 #include "Gugu/Resources/ManagerResources.h"
@@ -15,9 +16,7 @@
 #include "Gugu/Audio/MusicInstance.h"
 #include "Gugu/System/SystemUtility.h"
 #include "Gugu/Math/Random.h"
-#include "Gugu/Version.h"
-
-#include "Gugu/External/PugiXmlWrap.h"
+#include "Gugu/External/PugiXmlUtility.h"
 
 #include <SFML/System/String.hpp>
 
@@ -44,7 +43,7 @@ AudioPlayer::~AudioPlayer()
 
 void AudioPlayer::AppStart()
 {
-    RegisterHandlerEvents(GetGameWindow());
+    RegisterEventHandler(GetGameWindow());
 
     gugu::GetAudio()->SetVolumeMaster(0.1f);
 
@@ -490,7 +489,7 @@ void AudioPlayer::ParseAndRunPlaylist()
     std::string parseDirectory = stringConversion.toAnsiString();
 
     std::vector<FileInfo> files;
-    GetFilesList(parseDirectory, files, true);
+    GetFiles(parseDirectory, files, true);
 
     std::set<std::string> validExtensions{ "wav", "ogg", "flac" };
     std::map<std::string, size_t> existingDirectories;

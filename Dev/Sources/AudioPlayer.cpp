@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////
 // Includes
 
-#include "Gugu/Version.h"
+#include "Gugu/EngineVersion.h"
 #include "Gugu/Engine.h"
 #include "Gugu/Window/Window.h"
 #include "Gugu/Resources/ManagerResources.h"
@@ -17,12 +17,9 @@
 #include "Gugu/System/SystemUtility.h"
 #include "Gugu/Math/Random.h"
 #include "Gugu/External/PugiXmlUtility.h"
+#include "Gugu/External/ImGuiUtility.h"
 
 #include <SFML/System/String.hpp>
-
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <imgui_stdlib.h>
 
 ////////////////////////////////////////////////////////////////
 // File Implementation
@@ -124,7 +121,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
         ImGui::Spacing();
         ImGui::Text("author: Legulysse");
         ImGui::Spacing();
-        ImGui::Text("using gugu::Engine %s", GUGU_VERSION);
+        ImGui::Text("using gugu::Engine %s", GUGU_ENGINE_VERSION);
 
         ImGui::Spacing();
         if (ImGui::Button("Close"))
@@ -417,7 +414,7 @@ void AudioPlayer::UpdatePlayControls()
                 ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
 
                 //TODO: find a way to retrieve playlist index, to use the filenames cache.
-                ImGui::Text("Track : %s", sf::String(musicInstance->GetMusic()->GetFileInfo().GetName()).toUtf8().c_str());
+                ImGui::Text("Track : %s", sf::String(musicInstance->GetMusic()->GetFileInfo().GetPrettyName()).toUtf8().c_str());
 
                 ImGui::Text(StringFormat("Time : {0} / {1}s", (int)offset.asSeconds(), (int)duration.asSeconds()).c_str());
 
@@ -491,14 +488,14 @@ void AudioPlayer::ParseAndRunPlaylist()
     std::vector<FileInfo> files;
     GetFiles(parseDirectory, files, true);
 
-    std::set<std::string> validExtensions{ "wav", "ogg", "flac" };
+    std::set<std::string> validExtensions{ "wav", "ogg", "flac", "mp3" };
     std::map<std::string, size_t> existingDirectories;
     for (size_t i = 0; i < files.size(); ++i)
     {
         if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
         {
-            std::string filePathName = files[i].GetPathName();
-            std::string directoryPath = files[i].GetPath(false);
+            std::string filePathName = files[i].GetFilePath();
+            std::string directoryPath = files[i].GetDirectoryPath();
             size_t directoryIndex = (size_t)-1;
 
             auto it = existingDirectories.find(directoryPath);
@@ -532,7 +529,7 @@ void AudioPlayer::ParseAndRunPlaylist()
         for (size_t ii = 0; ii < m_albumDirectories[i].files.size(); ++ii)
         {
             std::string fileName;
-            FileFromPathFile(m_albumDirectories[i].files[ii], fileName);
+            NamePartFromPath(m_albumDirectories[i].files[ii], fileName);
 
             m_albumDirectories[i].fileNames_utf8[ii] = sf::String(fileName).toUtf8();
         }

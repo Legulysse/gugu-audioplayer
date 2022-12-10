@@ -225,7 +225,7 @@ void AudioPlayer::UpdateLibrary()
 
             // TODO: handle sort (ImGuiTableSortSpecs).
             ImGuiListClipper clipper;
-            clipper.Begin(m_albumDirectories.size());
+            clipper.Begin((int)m_albumDirectories.size());
             while (clipper.Step())
             {
                 for (int rowIndex = clipper.DisplayStart; rowIndex < clipper.DisplayEnd; rowIndex++)
@@ -279,7 +279,7 @@ void AudioPlayer::UpdateHistory()
             ImGui::TableHeadersRow();
 
             ImGuiListClipper clipper;
-            clipper.Begin(m_lastAlbumIndexes.size());
+            clipper.Begin((int)m_lastAlbumIndexes.size());
             while (clipper.Step())
             {
                 for (int rowIndex = clipper.DisplayStart; rowIndex < clipper.DisplayEnd; rowIndex++)
@@ -339,7 +339,7 @@ void AudioPlayer::UpdateCurrentAlbum()
 
                 for (size_t rowIndex = 0; rowIndex < m_albumDirectories[m_currentAlbumIndex].files.size(); ++rowIndex)
                 {
-                    ImGui::PushID(rowIndex);
+                    ImGui::PushID((int)rowIndex);
 
                     float row_min_height = 0.f;
                     ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
@@ -359,7 +359,7 @@ void AudioPlayer::UpdateCurrentAlbum()
                     ImGui::TableSetColumnIndex(columnIndex++);
 
                     char label[32];
-                    sprintf(label, "%04d", rowIndex);
+                    sprintf(label, "%04zu", rowIndex);
                     ImGui::Text(label);
 
                     ImGui::TableSetColumnIndex(columnIndex++);

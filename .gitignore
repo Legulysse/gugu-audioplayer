@@ -15,6 +15,7 @@
 ## User Files
 
 *.pro.user
+*.aps
 Trace_*.json
 imgui.ini
 *.log

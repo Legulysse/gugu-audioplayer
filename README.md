@@ -1,6 +1,6 @@
 # gugu::AudioPlayer 0.3
 
-[![License: Zlib](https://img.shields.io/badge/License-Zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A minimalist and lightweight audio player, written in C++, mainly based on SFML and ImGui.  
 (less than 4 MB on disk, around 50 MB in RAM)  

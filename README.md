@@ -2,8 +2,8 @@
 
 [![License: Zlib](https://img.shields.io/badge/License-Zlib-lightgrey.svg)](https://opensource.org/licenses/Zlib)
 
-A minimalist audio player, written in C++, mainly based on SFML and ImGui.  
-It is very lightweight (less than 4 MB on disk, around 50 MB in RAM).  
+A minimalist and lightweight audio player, written in C++, mainly based on SFML and ImGui.  
+(less than 4 MB on disk, around 50 MB in RAM)  
 
 Author : Legulysse  
 

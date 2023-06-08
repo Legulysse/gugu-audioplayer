@@ -22,15 +22,6 @@ solution "AudioPlayer"
     group "Application"
     ProjectDefault(BuildCfg, "GuguAudioPlayer", pathDev.."Sources", pathVersion, "6A983AD1-4D36-4949-B95D-B2FA4E7BC81D")
     
-        -- Resources (Icon)
-        filter { 'system:windows' }
-            files {
-                pathDev.."Sources/AppResources/**.rc",
-                pathDev.."Sources/AppResources/**.ico",
-            }
-            vpaths { ["Resources/*"] = { "**.rc", "**.ico" } }
-        filter {}
-
     group "Engine"
     ProjectLibGuguEngine(BuildCfg)
     

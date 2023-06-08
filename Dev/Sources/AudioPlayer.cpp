@@ -29,8 +29,10 @@ namespace gugu {
 AudioPlayer::AudioPlayer()
     : m_resetPanels(false)
     , m_isRunningPlaylist(false)
+    , m_loopTrack(false)
     , m_loopAlbum(false)
     , m_currentAlbumIndex((size_t)-1)
+    , m_currentTrackIndex((size_t)-1)
 {
 }
 
@@ -386,23 +388,39 @@ void AudioPlayer::UpdatePlayControls()
         }
 
         ImGui::Spacing();
+        ImGui::Spacing();
 
         if (m_isRunningPlaylist)
         {
-            // Handle album transition when running album ends.
+            // Handle track transition when current track ends.
             gugu::MusicInstance* musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
             if (!musicInstance)
             {
-                if (m_loopAlbum)
+                if (m_loopTrack)
                 {
-                    PlayCurrentAlbum();
+                    PlayAlbumTrack(m_currentTrackIndex);
                 }
                 else
                 {
-                    RunNextPlaylistAlbum();
+                    PlayNextAlbumTrack();
                 }
 
+                // Handle album transition when running album ends.
                 musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
+                if (!musicInstance)
+                {
+                    if (m_loopAlbum)
+                    {
+                        PlayCurrentAlbum();
+                    }
+                    else
+                    {
+                        RunNextPlaylistAlbum();
+                    }
+
+                    // Retrieve the selected track.
+                    musicInstance = gugu::GetAudio()->GetCurrentMusicInstance(0);
+                }
             }
 
             // Default Track/Album controls.
@@ -414,7 +432,7 @@ void AudioPlayer::UpdatePlayControls()
                 ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
 
                 //TODO: find a way to retrieve playlist index, to use the filenames cache.
-                ImGui::Text("Track : %s", sf::String(musicInstance->GetMusic()->GetFileInfo().GetPrettyName()).toUtf8().c_str());
+                ImGui::Text("Track : %s", sf::String(std::string(musicInstance->GetMusic()->GetFileInfo().GetPrettyName())).toUtf8().c_str());
 
                 ImGui::Text(StringFormat("Time : {0} / {1}s", (int)offset.asSeconds(), (int)duration.asSeconds()).c_str());
 
@@ -444,7 +462,7 @@ void AudioPlayer::UpdatePlayControls()
                 ImGui::SameLine();
                 if (ImGui::Button("Next Track"))
                 {
-                    musicInstance->Stop();
+                    PlayNextAlbumTrack();
                 }
 
                 ImGui::SameLine();
@@ -454,6 +472,9 @@ void AudioPlayer::UpdatePlayControls()
 
                     RunNextPlaylistAlbum();
                 }
+
+                ImGui::SameLine();
+                ImGui::Checkbox("Loop Track", &m_loopTrack);
 
                 ImGui::SameLine();
                 ImGui::Checkbox("Loop Album", &m_loopAlbum);
@@ -488,14 +509,14 @@ void AudioPlayer::ParseAndRunPlaylist()
     std::vector<FileInfo> files;
     GetFiles(parseDirectory, files, true);
 
-    std::set<std::string> validExtensions{ "wav", "ogg", "flac", "mp3" };
-    std::map<std::string, size_t> existingDirectories;
+    std::set<std::string_view> validExtensions{ "wav", "ogg", "flac", "mp3" };
+    std::map<std::string_view, size_t> existingDirectories;
     for (size_t i = 0; i < files.size(); ++i)
     {
         if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
         {
-            std::string filePathName = files[i].GetFilePath();
-            std::string directoryPath = files[i].GetDirectoryPath();
+            const std::string& filePathName = files[i].GetFilePath();
+            std::string_view directoryPath = files[i].GetDirectoryPath();
             size_t directoryIndex = (size_t)-1;
 
             auto it = existingDirectories.find(directoryPath);
@@ -579,28 +600,59 @@ void AudioPlayer::PlayCurrentAlbum()
 {
     if (!m_albumDirectories.empty() && m_currentAlbumIndex >= 0 && m_currentAlbumIndex < m_albumDirectories.size())
     {
-        std::vector<gugu::MusicParameters> vecPlaylist;
-        for (size_t i = 0; i < m_albumDirectories[m_currentAlbumIndex].files.size(); ++i)
+        m_isRunningPlaylist = true;
+        m_currentTrackIndex = 0;
+        PlayAlbumTrack(m_currentTrackIndex);
+    }
+}
+
+void AudioPlayer::PlayNextAlbumTrack()
+{
+    if (!m_albumDirectories.empty()
+        && m_currentAlbumIndex >= 0 && m_currentAlbumIndex < m_albumDirectories.size()
+        && m_albumDirectories[m_currentAlbumIndex].files.size() > 0)
+    {
+        m_currentTrackIndex += 1;
+
+        if (m_loopAlbum && m_currentTrackIndex >= m_albumDirectories[m_currentAlbumIndex].files.size())
         {
-            std::string resourceID = m_albumDirectories[m_currentAlbumIndex].files[i];
-            gugu::FileInfo fileInfo(resourceID);
-
-            //TODO: test already existing ressource.
-            //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
-            gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
-            gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
-
-            gugu::MusicParameters params;
-            params.musicID = resourceID;
-            params.fadeIn = 0.0f;
-            params.fadeOut = 0.0f;
-            vecPlaylist.push_back(params);
+            m_currentTrackIndex = 0;
         }
 
-        if (!vecPlaylist.empty())
+        PlayAlbumTrack(m_currentTrackIndex);
+    }
+}
+
+void AudioPlayer::PlayAlbumTrack(size_t trackIndex)
+{
+    if (!m_albumDirectories.empty()
+        && m_currentAlbumIndex >= 0 && m_currentAlbumIndex < m_albumDirectories.size())
+    {
+        if (trackIndex >= 0 && trackIndex < m_albumDirectories[m_currentAlbumIndex].files.size())
         {
-            m_isRunningPlaylist = true;
-            gugu::GetAudio()->PlayMusicList(vecPlaylist, false, 0);
+            const std::string& resourceID = m_albumDirectories[m_currentAlbumIndex].files[trackIndex];
+            gugu::FileInfo fileInfo(resourceID);
+
+            //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
+            if (!gugu::GetResources()->HasResource(resourceID))
+            {
+                gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
+            }
+
+            gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
+            if (music)
+            {
+                gugu::MusicParameters params;
+                params.musicID = resourceID;
+                params.fadeIn = 0.0f;
+                params.fadeOut = 0.0f;
+
+                gugu::GetAudio()->PlayMusic(params);
+            }
+        }
+        else
+        {
+            gugu::GetAudio()->StopMusic(0.f);
         }
     }
 }

@@ -40,6 +40,8 @@ private:
     void ParseAndRunPlaylist();
     void RunNextPlaylistAlbum();
     void PlayCurrentAlbum();
+    void PlayNextAlbumTrack();
+    void PlayAlbumTrack(size_t trackIndex);
 
 private:
 
@@ -47,6 +49,7 @@ private:
 
     std::string m_libraryDirectory;
     bool m_isRunningPlaylist;
+    bool m_loopTrack;
     bool m_loopAlbum;
 
     struct AlbumDirectory
@@ -61,6 +64,7 @@ private:
     std::vector<size_t> m_nextAlbumIndexes;
     std::vector<size_t> m_lastAlbumIndexes;
     size_t m_currentAlbumIndex;
+    size_t m_currentTrackIndex;
 };
 
 }   //namespace gugu

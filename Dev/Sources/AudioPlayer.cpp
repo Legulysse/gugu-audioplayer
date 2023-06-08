@@ -119,7 +119,7 @@ void AudioPlayer::AppUpdate(const DeltaTime& dt)
     bool unused_open = true;
     if (ImGui::BeginPopupModal("About", &unused_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings))
     {
-        ImGui::Text("gugu::AudioPlayer %s", "0.2");
+        ImGui::Text("gugu::AudioPlayer %s", "0.3");
         ImGui::Spacing();
         ImGui::Text("author: Legulysse");
         ImGui::Spacing();

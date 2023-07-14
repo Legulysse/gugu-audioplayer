@@ -5,6 +5,7 @@
 
 #include "Gugu/Core/Application.h"
 #include "Gugu/Events/EventListener.h"
+#include "Gugu/System/FileInfo.h"
 
 #include <vector>
 
@@ -54,11 +55,9 @@ private:
 
     struct AlbumDirectory
     {
-        std::string directoryName;
-        std::basic_string<gugu::uint8> directoryName_utf8;
-
-        std::vector<std::string> files;
-        std::vector<std::basic_string<gugu::uint8>> fileNames_utf8;
+        std::string directoryName_utf8;
+        std::vector<std::string> fileNames_utf8;
+        std::vector<gugu::FileInfo> files;
     };
     std::vector<AlbumDirectory> m_albumDirectories;
     std::vector<size_t> m_nextAlbumIndexes;

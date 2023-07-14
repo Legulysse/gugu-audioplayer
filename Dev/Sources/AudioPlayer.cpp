@@ -430,10 +430,7 @@ void AudioPlayer::UpdatePlayControls()
                 sf::Time duration = musicInstance->GetDuration();
 
                 ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
-
-                //TODO: find a way to retrieve playlist index, to use the filenames cache.
-                ImGui::Text("Track : %s", sf::String(std::string(musicInstance->GetMusic()->GetFileInfo().GetPrettyName())).toUtf8().c_str());
-
+                ImGui::Text("Track : %s", m_albumDirectories[m_currentAlbumIndex].fileNames_utf8[m_currentTrackIndex].c_str());
                 ImGui::Text(StringFormat("Time : {0} / {1}s", (int)offset.asSeconds(), (int)duration.asSeconds()).c_str());
 
                 int seekPosition = offset.asMilliseconds();
@@ -503,11 +500,8 @@ void AudioPlayer::ParseAndRunPlaylist()
     m_currentAlbumIndex = (size_t)-1;
 
     // Discover album directories.
-    sf::String stringConversion = sf::String::fromUtf8(m_libraryDirectory.begin(), m_libraryDirectory.end());
-    std::string parseDirectory = stringConversion.toAnsiString();
-
     std::vector<FileInfo> files;
-    GetFiles(parseDirectory, files, true);
+    GetFiles(m_libraryDirectory, files, true);
 
     std::set<std::string_view> validExtensions{ "wav", "ogg", "flac", "mp3" };
     std::map<std::string_view, size_t> existingDirectories;
@@ -515,8 +509,7 @@ void AudioPlayer::ParseAndRunPlaylist()
     {
         if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
         {
-            const std::string& filePathName = files[i].GetFilePath();
-            std::string_view directoryPath = files[i].GetDirectoryPath();
+            std::string_view directoryPath = files[i].GetDirectoryPath_utf8();
             size_t directoryIndex = (size_t)-1;
 
             auto it = existingDirectories.find(directoryPath);
@@ -526,7 +519,7 @@ void AudioPlayer::ParseAndRunPlaylist()
                 existingDirectories.insert(it, std::make_pair(directoryPath, directoryIndex));
 
                 AlbumDirectory newAlbumDirectory;
-                newAlbumDirectory.directoryName = directoryPath;
+                newAlbumDirectory.directoryName_utf8 = directoryPath;
 
                 m_albumDirectories.push_back(newAlbumDirectory);
                 m_nextAlbumIndexes.push_back(directoryIndex);
@@ -536,23 +529,18 @@ void AudioPlayer::ParseAndRunPlaylist()
                 directoryIndex = it->second;
             }
 
-            m_albumDirectories[directoryIndex].files.push_back(filePathName);
+            m_albumDirectories[directoryIndex].files.push_back(files[i]);
         }
     }
 
     // Cache some data
     for (size_t i = 0; i < m_albumDirectories.size(); ++i)
     {
-        m_albumDirectories[i].directoryName_utf8 = sf::String(m_albumDirectories[i].directoryName).toUtf8();
-
         m_albumDirectories[i].fileNames_utf8.resize(m_albumDirectories[i].files.size());
 
         for (size_t ii = 0; ii < m_albumDirectories[i].files.size(); ++ii)
         {
-            std::string fileName;
-            NamePartFromPath(m_albumDirectories[i].files[ii], fileName);
-
-            m_albumDirectories[i].fileNames_utf8[ii] = sf::String(fileName).toUtf8();
+            m_albumDirectories[i].fileNames_utf8[ii] = m_albumDirectories[i].files[ii].GetFileName_utf8();
         }
     }
 
@@ -630,8 +618,8 @@ void AudioPlayer::PlayAlbumTrack(size_t trackIndex)
     {
         if (trackIndex >= 0 && trackIndex < m_albumDirectories[m_currentAlbumIndex].files.size())
         {
-            const std::string& resourceID = m_albumDirectories[m_currentAlbumIndex].files[trackIndex];
-            gugu::FileInfo fileInfo(resourceID);
+            std::string resourceID = std::string(m_albumDirectories[m_currentAlbumIndex].files[trackIndex].GetFilePath_utf8());
+            gugu::FileInfo fileInfo = gugu::FileInfo::FromString_utf8(resourceID);
 
             //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
             if (!gugu::GetResources()->HasResource(resourceID))

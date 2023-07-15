@@ -20,6 +20,10 @@ int main(int argc, char* argv[])
 #endif
 
     //----------------------------------------------
+
+    setlocale(LC_ALL, ".UTF8");
+
+    //----------------------------------------------
     // Init engine
 
     EngineConfig config;

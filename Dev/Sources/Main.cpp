@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
     config.windowWidth = 800;
     config.windowHeight = 600;
     config.backgroundColor = sf::Color(128, 128, 128, 255);
+    config.showImGui = true;
     
     GetEngine()->Init(config);
 

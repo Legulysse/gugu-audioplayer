@@ -14,7 +14,9 @@
 #include "Gugu/Resources/Music.h"
 #include "Gugu/Audio/ManagerAudio.h"
 #include "Gugu/Audio/MusicInstance.h"
-#include "Gugu/System/SystemUtility.h"
+#include "Gugu/System/Container.h"
+#include "Gugu/System/Platform.h"
+#include "Gugu/System/String.h"
 #include "Gugu/Math/Random.h"
 #include "Gugu/External/PugiXmlUtility.h"
 #include "Gugu/External/ImGuiUtility.h"
@@ -44,7 +46,7 @@ void AudioPlayer::AppStart()
 {
     RegisterEventHandler(GetGameWindow());
 
-    gugu::GetAudio()->SetVolumeMaster(0.1f);
+    gugu::GetAudio()->SetMasterVolume(0.1f);
 
     // Additional ImGui Setup.
     ImGuiIO& io = ImGui::GetIO();
@@ -82,7 +84,7 @@ void AudioPlayer::SaveUserSettings()
     //TODO
 }
 
-void AudioPlayer::AppUpdate(const DeltaTime& dt)
+void AudioPlayer::AppUpdateImGui(const DeltaTime& dt)
 {
     // Main menu bar.
     bool openModalAbout = false;
@@ -381,10 +383,10 @@ void AudioPlayer::UpdatePlayControls()
 {
     if (ImGui::Begin("Play Controls", false))
     {
-        float volume = GetAudio()->GetVolumeMaster();
+        float volume = GetAudio()->GetMasterVolume();
         if (ImGui::SliderFloat("Volume", &volume, 0.f, 2.f))
         {
-            GetAudio()->SetVolumeMaster(volume);
+            GetAudio()->SetMasterVolume(volume);
         }
 
         ImGui::Spacing();

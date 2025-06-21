@@ -7,6 +7,8 @@
 ////////////////////////////////////////////////////////////////
 // Includes
 
+#include "AudioPlayerVersion.h"
+
 #include "Gugu/EngineVersion.h"
 #include "Gugu/Engine.h"
 #include "Gugu/Window/Window.h"
@@ -128,7 +130,7 @@ void AudioPlayer::AppUpdateImGui(const DeltaTime& dt)
     bool unused_open = true;
     if (ImGui::BeginPopupModal("About", &unused_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings))
     {
-        ImGui::Text("gugu::AudioPlayer %s", "0.3");
+        ImGui::Text("gugu::AudioPlayer %s", GUGU_AUDIOPLAYER_VERSION);
         ImGui::Spacing();
         ImGui::Text("author: Legulysse");
         ImGui::Spacing();

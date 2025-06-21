@@ -1,4 +1,4 @@
-# gugu::AudioPlayer 0.3
+# gugu::AudioPlayer 0.4.0-dev
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -24,14 +24,7 @@ The supported formats are .wav, .flac, .ogg, .mp3.
 ## Limitations
 
 The application does not allow the selection of a specific album or track, it only relies on the automatic shuffle play of albums.  
-
-The application does not save the input "Directory", but it will look for a file located at this specific path : /User/Settings.xml, with this structure :  
-```xml
-<Settings>
-    <Library path="F:/Musique" />
-</Settings>
-```
-
+  
 More controls will be added in the future to remove those limitations.  
 
 ## Dependencies

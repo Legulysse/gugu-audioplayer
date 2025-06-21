@@ -622,9 +622,9 @@ void AudioPlayer::PlayAlbum(size_t albumIndex)
         // Setup play.
         m_isRunningPlaylist = true;
         m_currentAlbumIndex = albumIndex;
-        m_currentTrackIndex = 0;
+        m_currentTrackIndex = system::InvalidIndex;
 
-        PlayAlbumTrack(m_currentTrackIndex);
+        PlayAlbumTrack(0);
     }
 }
 
@@ -634,14 +634,23 @@ void AudioPlayer::PlayNextAlbumTrack()
         && m_currentAlbumIndex >= 0 && m_currentAlbumIndex < m_albumDirectories.size()
         && m_albumDirectories[m_currentAlbumIndex].files.size() > 0)
     {
-        m_currentTrackIndex += 1;
+        size_t nextTrackIndex = m_currentTrackIndex + 1;
 
-        if (m_loopAlbum && m_currentTrackIndex >= m_albumDirectories[m_currentAlbumIndex].files.size())
+        if (nextTrackIndex >= m_albumDirectories[m_currentAlbumIndex].files.size())
         {
-            m_currentTrackIndex = 0;
+            if (m_loopAlbum)
+            {
+                PlayAlbumTrack(0);
+            }
+            else
+            {
+                RunNextPlaylistAlbum();
+            }
         }
-
-        PlayAlbumTrack(m_currentTrackIndex);
+        else
+        {
+            PlayAlbumTrack(nextTrackIndex);
+        }
     }
 }
 
@@ -652,7 +661,9 @@ void AudioPlayer::PlayAlbumTrack(size_t trackIndex)
     {
         if (trackIndex >= 0 && trackIndex < m_albumDirectories[m_currentAlbumIndex].files.size())
         {
-            std::string resourceID = std::string(m_albumDirectories[m_currentAlbumIndex].files[trackIndex].GetFilePath_utf8());
+            m_currentTrackIndex = trackIndex;
+
+            std::string resourceID = std::string(m_albumDirectories[m_currentAlbumIndex].files[m_currentTrackIndex].GetFilePath_utf8());
             gugu::FileInfo fileInfo = gugu::FileInfo::FromString_utf8(resourceID);
 
             //TODO: handle files outside of ressources ? Wait for similar update in Editor to see how to do this.
@@ -671,10 +682,6 @@ void AudioPlayer::PlayAlbumTrack(size_t trackIndex)
 
                 gugu::GetAudio()->PlayMusic(params);
             }
-        }
-        else
-        {
-            gugu::GetAudio()->StopMusic(0.f);
         }
     }
 }

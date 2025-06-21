@@ -201,6 +201,8 @@ void AudioPlayer::AppUpdateImGui(const DeltaTime& dt)
 
 void AudioPlayer::UpdateLibrary()
 {
+    size_t playRequestIndex = system::InvalidIndex;
+
     if (ImGui::Begin("Library", false))
     {
         ImGui::InputText("Directory", &m_libraryDirectory);
@@ -230,9 +232,10 @@ void AudioPlayer::UpdateLibrary()
         }
 
         ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY /* | ImGuiTableFlags_NoPadInnerX */;
-        if (ImGui::BeginTable("Albums Table", 2, flags))
+        if (ImGui::BeginTable("Albums Table", 3, flags))
         {
             ImGui::TableSetupColumn("#", ImGuiTableColumnFlags_WidthFixed, 30.f);
+            ImGui::TableSetupColumn("play", ImGuiTableColumnFlags_WidthFixed, 36.f);
             ImGui::TableSetupColumn("album", ImGuiTableColumnFlags_WidthStretch, 0.f);
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableHeadersRow();
@@ -258,6 +261,8 @@ void AudioPlayer::UpdateLibrary()
                         ImGui::PushItemWidth(-1);
                         ImGui::TableSetColumnIndex(headerIndex++);
                         ImGui::PushItemWidth(-1);
+                        ImGui::TableSetColumnIndex(headerIndex++);
+                        ImGui::PushItemWidth(-1);
                     }
 
                     int columnIndex = 0;
@@ -266,6 +271,12 @@ void AudioPlayer::UpdateLibrary()
                     char label[32];
                     sprintf(label, "%04d", rowIndex);
                     ImGui::Text(label);
+
+                    ImGui::TableSetColumnIndex(columnIndex++);
+                    if (ImGui::Button("Play"))
+                    {
+                        playRequestIndex = rowIndex;
+                    }
 
                     ImGui::TableSetColumnIndex(columnIndex++);
                     ImGui::Text("%s", m_albumDirectories[rowIndex].directoryName_utf8.c_str());
@@ -278,6 +289,11 @@ void AudioPlayer::UpdateLibrary()
         }
     }
     ImGui::End();
+
+    if (playRequestIndex != system::InvalidIndex)
+    {
+        PlayAlbum(playRequestIndex);
+    }
 }
 
 void AudioPlayer::UpdateHistory()
@@ -423,7 +439,7 @@ void AudioPlayer::UpdatePlayControls()
                 {
                     if (m_loopAlbum)
                     {
-                        PlayCurrentAlbum();
+                        PlayAlbum(m_currentAlbumIndex);
                     }
                     else
                     {
@@ -583,25 +599,29 @@ void AudioPlayer::RunNextPlaylistAlbum()
             nextIndex = m_nextAlbumIndexes[randomIndex];
         }
 
-        m_currentAlbumIndex = nextIndex;
-        StdVectorRemoveAt(m_nextAlbumIndexes, randomIndex);
-
-        if (m_lastAlbumIndexes.empty() || m_lastAlbumIndexes.back() != nextIndex)
-        {
-            m_lastAlbumIndexes.push_back(nextIndex);
-        }
-
         // Load the new album.
-        PlayCurrentAlbum();
+        PlayAlbum(nextIndex);
     }
 }
 
-void AudioPlayer::PlayCurrentAlbum()
+void AudioPlayer::PlayAlbum(size_t albumIndex)
 {
-    if (!m_albumDirectories.empty() && m_currentAlbumIndex >= 0 && m_currentAlbumIndex < m_albumDirectories.size())
+    if (!m_albumDirectories.empty() && albumIndex >= 0 && albumIndex < m_albumDirectories.size())
     {
+        // Remove from pending albums.
+        StdVectorRemoveFirst(m_nextAlbumIndexes, albumIndex);
+
+        // Update album history.
+        if (m_lastAlbumIndexes.empty() || m_lastAlbumIndexes.back() != albumIndex)
+        {
+            m_lastAlbumIndexes.push_back(albumIndex);
+        }
+
+        // Setup play.
         m_isRunningPlaylist = true;
+        m_currentAlbumIndex = albumIndex;
         m_currentTrackIndex = 0;
+
         PlayAlbumTrack(m_currentTrackIndex);
     }
 }

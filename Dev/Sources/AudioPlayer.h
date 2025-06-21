@@ -40,7 +40,7 @@ private:
 
     void ParseAndRunPlaylist();
     void RunNextPlaylistAlbum();
-    void PlayCurrentAlbum();
+    void PlayAlbum(size_t albumIndex);
     void PlayNextAlbumTrack();
     void PlayAlbumTrack(size_t trackIndex);
 

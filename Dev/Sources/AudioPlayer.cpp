@@ -59,6 +59,7 @@ void AudioPlayer::AppStart()
 
 void AudioPlayer::AppStop()
 {
+    SaveUserSettings();
 }
 
 void AudioPlayer::LoadUserSettings()
@@ -81,7 +82,13 @@ void AudioPlayer::LoadUserSettings()
 
 void AudioPlayer::SaveUserSettings()
 {
-    //TODO
+    pugi::xml_document document;
+    pugi::xml_node nodeRoot = document.append_child("Settings");
+    pugi::xml_node nodeLibrary = nodeRoot.append_child("Library");
+
+    nodeLibrary.append_attribute("path").set_value(m_libraryDirectory.c_str());
+
+    document.save_file("User/Settings.xml");
 }
 
 void AudioPlayer::AppUpdateImGui(const DeltaTime& dt)
@@ -198,6 +205,7 @@ void AudioPlayer::UpdateLibrary()
 
         if (ImGui::Button("Parse and Run Playlist"))
         {
+            SaveUserSettings();
             ParseAndRunPlaylist();
         }
 

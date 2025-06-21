@@ -35,8 +35,8 @@ AudioPlayer::AudioPlayer()
     , m_isRunningPlaylist(false)
     , m_loopTrack(false)
     , m_loopAlbum(false)
-    , m_currentAlbumIndex((size_t)-1)
-    , m_currentTrackIndex((size_t)-1)
+    , m_currentAlbumIndex(system::InvalidIndex)
+    , m_currentTrackIndex(system::InvalidIndex)
 {
 }
 
@@ -222,7 +222,8 @@ void AudioPlayer::UpdateLibrary()
             m_albumDirectories.clear();
             m_nextAlbumIndexes.clear();
             m_lastAlbumIndexes.clear();
-            m_currentAlbumIndex = (size_t)-1;
+            m_currentAlbumIndex = system::InvalidIndex;
+            m_currentTrackIndex = system::InvalidIndex;
         }
 
         ImGui::SameLine();
@@ -354,7 +355,7 @@ void AudioPlayer::UpdateCurrentAlbum()
 {
     if (ImGui::Begin("Album", false))
     {
-        if (m_currentAlbumIndex != (size_t)-1)
+        if (m_currentAlbumIndex != system::InvalidIndex)
         {
             ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
             ImGui::Spacing();
@@ -525,7 +526,8 @@ void AudioPlayer::ParseAndRunPlaylist()
     m_albumDirectories.clear();
     m_nextAlbumIndexes.clear();
     m_lastAlbumIndexes.clear();
-    m_currentAlbumIndex = (size_t)-1;
+    m_currentAlbumIndex = system::InvalidIndex;
+    m_currentTrackIndex = system::InvalidIndex;
 
     // Discover album directories.
     std::vector<FileInfo> files;
@@ -538,7 +540,7 @@ void AudioPlayer::ParseAndRunPlaylist()
         if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
         {
             std::string_view directoryPath = files[i].GetDirectoryPath_utf8();
-            size_t directoryIndex = (size_t)-1;
+            size_t directoryIndex = system::InvalidIndex;
 
             auto it = existingDirectories.find(directoryPath);
             if (it == existingDirectories.end())

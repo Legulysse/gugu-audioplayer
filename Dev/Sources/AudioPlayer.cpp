@@ -13,9 +13,7 @@
 #include "Gugu/Engine.h"
 #include "Gugu/Window/Window.h"
 #include "Gugu/Resources/ManagerResources.h"
-#include "Gugu/Resources/Music.h"
 #include "Gugu/Audio/ManagerAudio.h"
-#include "Gugu/Audio/MusicInstance.h"
 #include "Gugu/System/Container.h"
 #include "Gugu/System/Platform.h"
 #include "Gugu/System/String.h"
@@ -48,7 +46,7 @@ void AudioPlayer::AppStart()
 {
     RegisterEventHandler(GetGameWindow());
 
-    gugu::GetAudio()->SetMasterVolume(0.1f);
+    gugu::GetAudio()->SetListenerVolume(0.1f);
 
     // Additional ImGui Setup.
     ImGuiIO& io = ImGui::GetIO();
@@ -410,10 +408,10 @@ void AudioPlayer::UpdatePlayControls()
 {
     if (ImGui::Begin("Play Controls", false))
     {
-        float volume = GetAudio()->GetMasterVolume();
+        float volume = GetAudio()->GetListenerVolume();
         if (ImGui::SliderFloat("Volume", &volume, 0.f, 2.f))
         {
-            GetAudio()->SetMasterVolume(volume);
+            GetAudio()->SetListenerVolume(volume);
         }
 
         ImGui::Spacing();
@@ -672,11 +670,12 @@ void AudioPlayer::PlayAlbumTrack(size_t trackIndex)
                 gugu::GetResources()->RegisterResourceInfo(resourceID, fileInfo);
             }
 
-            gugu::Music* music = gugu::GetResources()->GetMusic(resourceID);
-            if (music)
+            gugu::AudioClip* audioClip = gugu::GetResources()->GetAudioClip(resourceID);
+            if (audioClip)
             {
                 gugu::MusicParameters params;
-                params.musicID = resourceID;
+                params.audioClip = audioClip;
+                params.audioClipId = resourceID;
                 params.fadeIn = 0.0f;
                 params.fadeOut = 0.0f;
 

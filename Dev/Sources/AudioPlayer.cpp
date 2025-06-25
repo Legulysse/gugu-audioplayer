@@ -88,6 +88,7 @@ void AudioPlayer::SaveUserSettings()
 
     nodeLibrary.append_attribute("path").set_value(m_libraryDirectory.c_str());
 
+    EnsureDirectoryExists("User");
     document.save_file("User/Settings.xml");
 }
 

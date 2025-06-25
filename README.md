@@ -21,18 +21,6 @@ The supported formats are .wav, .flac, .ogg, .mp3.
   
 ![Screenshot](/Docs/version-0_3.png)
 
-## Limitations
-
-The application does not allow the selection of a specific album or track, it only relies on the automatic shuffle play of albums.  
-  
-More controls will be added in the future to remove those limitations.  
-
 ## Dependencies
 
-- gugu::Engine
-- SFML 2.6.x : used by the Engine.  
-- PugiXml 1.11.4 : used by the Engine.  
-- ImGui 1.85 (docking) : used by the Editor.  
-- ImGui-SFML 2.3 : used for the ImGui integration.  
-- Python 3.x : used for build and utility scripts.  
-- Premake 5 alpha 16 : used by build scripts.  
+- [gugu::Engine](https://github.com/Legulysse/gugu-engine)

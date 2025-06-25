@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
     config.backgroundColor = sf::Color(128, 128, 128, 255);
     config.showImGui = true;
     config.maximizeWindow = true;
+    config.framerateLimit = 30;
     
     GetEngine()->Init(config);
 

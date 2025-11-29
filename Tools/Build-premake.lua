@@ -29,3 +29,10 @@ solution "AudioPlayer"
     ProjectLibSFML(BuildCfg)
     ProjectLibPugiXml(BuildCfg)
     ProjectLibImGui(BuildCfg)
+
+    group "Externals/Dependencies"
+    ProjectLibFlac(BuildCfg)
+    ProjectLibFreetype(BuildCfg)
+    ProjectLibOgg(BuildCfg)
+    ProjectLibVorbis(BuildCfg)
+    

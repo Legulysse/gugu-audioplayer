@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     config.applicationName = "Gugu::AudioPlayer";
     config.pathAssets = "Assets";
     config.applicationIcon = "music_beam.png";
-    config.defaultFont = "Spaceranger.ttf";
+    config.defaultFont = "Roboto-Regular.ttf";
     config.debugFont = "Roboto-Regular.ttf";
     config.gameWindow = EGameWindow::Sfml;
     config.windowWidth = 800;

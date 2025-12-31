@@ -457,9 +457,40 @@ void AudioPlayer::UpdatePlayControls()
                 sf::Time offset = musicInstance->GetPlayOffset();
                 sf::Time duration = musicInstance->GetDuration();
 
+                // TODO:
+                // - I could add a gugu::StringDurationFormat with bit flags on which components to consider, and separator options.
+                // - I could also add a gugu::Duration type in the engine.
+                //   - It would convert from a sf::Time and break down duration components (h, m, s, ms) (like the tm type from std).
+                //   - Another use could be to provide helpers for cooldowns operations (decrement + check zero).
+                //   - StringDurationFormat could directly use sf::Time, a new dedicated type is not necessarily useful right now.
+                int offsetSeconds = (int)offset.asSeconds();
+                int offsetMinutes = offsetSeconds / 60;
+                int offsetHours = offsetMinutes / 60;
+                offsetSeconds = offsetSeconds % 60;
+                offsetMinutes = offsetMinutes % 60;
+
+                int durationSeconds = (int)duration.asSeconds();
+                int durationMinutes = durationSeconds / 60;
+                int durationHours = durationMinutes / 60;
+                durationSeconds = durationSeconds % 60;
+                durationMinutes = durationMinutes % 60;
+
                 ImGui::Text("Album : %s", m_albumDirectories[m_currentAlbumIndex].directoryName_utf8.c_str());
                 ImGui::Text("Track : %s", m_albumDirectories[m_currentAlbumIndex].fileNames_utf8[m_currentTrackIndex].c_str());
-                ImGui::Text(StringFormat("Time : {0} / {1}s", (int)offset.asSeconds(), (int)duration.asSeconds()).c_str());
+                if (durationHours > 0)
+                {
+                    ImGui::Text(StringFormat("Time : {0}:{1}:{2} / {3}:{4}:{5}"
+                        , offsetHours, StringNumberFormat(offsetMinutes, 2), StringNumberFormat(offsetSeconds, 2)
+                        , durationHours, StringNumberFormat(durationMinutes, 2), StringNumberFormat(durationSeconds, 2)
+                    ).c_str());
+                }
+                else
+                {
+                    ImGui::Text(StringFormat("Time : {0}:{1} / {2}:{3}"
+                        , StringNumberFormat(offsetMinutes, 2), StringNumberFormat(offsetSeconds, 2)
+                        , StringNumberFormat(durationMinutes, 2), StringNumberFormat(durationSeconds, 2)
+                    ).c_str());
+                }
 
                 int seekPosition = offset.asMilliseconds();
                 if (ImGui::SliderInt("Seek", &seekPosition, 0, duration.asMilliseconds(), ""))

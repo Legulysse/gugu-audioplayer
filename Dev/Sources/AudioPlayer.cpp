@@ -563,11 +563,13 @@ void AudioPlayer::ParseAndRunPlaylist()
     std::vector<FileInfo> files;
     GetFiles(m_libraryDirectory, files, true);
 
-    std::set<std::string_view> validExtensions{ "wav", "ogg", "flac", "mp3" };
     std::map<std::string_view, size_t> existingDirectories;
     for (size_t i = 0; i < files.size(); ++i)
     {
-        if (validExtensions.find(files[i].GetExtension()) != validExtensions.end())
+        if (files[i].HasExtension("wav")
+            || files[i].HasExtension("ogg")
+            || files[i].HasExtension("flac")
+            || files[i].HasExtension("mp3"))
         {
             std::string_view directoryPath = files[i].GetDirectoryPath_utf8();
             size_t directoryIndex = system::InvalidIndex;

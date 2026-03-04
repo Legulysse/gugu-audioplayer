@@ -1,6 +1,7 @@
 # gugu::AudioPlayer 0.4.1-post
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+![No AI](https://img.shields.io/badge/No%20AI-gray)
 
 A minimalist and lightweight audio player, written in C++, mainly based on SFML and ImGui.  
 (less than 4 MB on disk, around 50 MB in RAM)  
@@ -24,3 +25,4 @@ The supported formats are .wav, .flac, .ogg, .mp3.
 ## Dependencies
 
 - [gugu::Engine](https://github.com/Legulysse/gugu-engine)
+

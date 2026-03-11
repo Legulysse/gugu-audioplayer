@@ -10,19 +10,19 @@ Author : Legulysse
 
 ## Quick Overview
 
-The main feature of this audio player is the way it will randomly pick albums.  
-(Any directory including one or more audio files will be considered as an album)  
+The goal of this project is to provide a lightweight audioplayer for offline music play.  
+Its main feature is the album shuffle (true shuffle, play all albums once before looping).  
 
-The standard behaviour is to start the player, enter a root directory, and use "Parse and Run Playlist" to let the application scan this directory for albums.  
-It will then randomly pick an album to play. Once finished, it will randomly pick another album.  
-This behaviour will automatically loop once all albums have been played.  
-The parser can be used for either a complete album collection, or using a subdirectory (like an artist directory) to only loop on the albums inside.  
-  
-The supported formats are .wav, .flac, .ogg, .mp3.  
+- The user needs to fill the root directory of the local music library, then hit the "Parse and Run Playlist" button.  
+- The audioplayer will shuffle all music albums found and play them one by one until all albums are played, before shuffling again.  
+- Each album tracks will be played sequentially.  
+- Any directory including one or more audio files will be considered as an album.  
+- Supported formats : wav, flac, ogg, mp3.  
   
 ![Screenshot](/Docs/version-0_3.png)
 
 ## Dependencies
 
 - [gugu::Engine](https://github.com/Legulysse/gugu-engine)
+
 
